@@ -1,0 +1,297 @@
+---
+title: "Mojave_Div_ITS_phyloseq"
+author: "Nat Pombubpa"
+date: "Updated on December 11, 2019"
+output: html_document
+---
+
+#Fungal taxonomic barplot by site
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###STEP1: Load all necessary packages for analysis
+More information about Phyloseq can be found at the following link: [Phyloseq](https://joey711.github.io/phyloseq/)
+If you get error in this step, you probably need to install any packages which causes error.
+
+```{r warning=FALSE, message=FALSE}
+library(ape)
+library(vegan)
+library(dplyr)
+library(scales)
+library(grid)
+library(reshape2)
+library(phyloseq)
+library(magrittr)
+library(ggplot2)
+library(ggpubr)
+library(plyr)
+library(data.table)
+library(tidyr)
+library(tidyverse)
+library(multcompView)
+library(ggtree)
+library(treeio)
+library(devtools)
+library(MicEco)
+library("DESeq2")
+# install.packages("devtools")
+#devtools::install_github("BlakeRMills/MoMAColors")
+library(MoMAColors)
+```
+
+###STEP2: Import Mapping file (metadate file)
+1.Check mapping file before import to R, R doesn’t seem to like sample name to start with number or contain “-” in sample name. If you get error in this step, you should check file name first.
+
+2.First column of first row should not start with #, R will not read the first row that starts with #
+
+3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
+
+```{r}
+meta = read.table("metadata_update3.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+```
+
+If need to keep or remove some samples
+```{r}
+#meta <- meta[which(meta$Layer %in% c("Surface")),]
+```
+
+###STEP3: Check if your metadata file has been import successfully and correctly
+
+The output will show a table of your metadata file (mapping file).
+
+*If you do not have header, you might start your first row with #
+
+```{r warning=FALSE}
+head(meta)
+```
+
+###STEP4: Construct sample_data-class using imported metadata
+
+```{r}
+sampleData <- sample_data(meta)
+```
+
+###STEP5: Import OTU table
+
+OTU table from Mojave 16S data is “MC2017FC.otu_table.txt”.
+MC-Mojave Crust-2017-FC-Fungi completed
+
+```{r}
+otus <- read.table("Mojave2020_KKelly202307.otu_table.txt",header=T,sep="\t",row.names=1)
+otumat <- as(as.matrix(otus), "matrix")
+OTU = otu_table(otumat, taxa_are_rows = TRUE)
+```
+
+Check imported OTU table
+
+```{r warning=FALSE}
+head(OTU)
+```
+
+###STEP6: Import taxonomy table
+Taxonmy table generated from AMPtk need to be rearranged using following script.
+
+“perl rdp_taxonmy2mat.pl<Input_taxonmy.txt>Output_taxonomy.txt”
+
+rdp_taxonomy2mat.pl was created by Professor Jason E. Stajich
+
+```{r}
+taxmat <- read.table("Mojave2020_KKelly202307.ASVs.taxonomy.fix.txt", header=T,sep="\t",row.names=1)
+taxmat <- as(as.matrix(taxmat),"matrix")
+TAX = tax_table(taxmat)
+```
+
+###STEP7: Import phylogenetic tree
+Phylogenetic tree can also be include for further phylogenetic analysis.
+
+```{r warning=FALSE}
+#treefile = "Mojave2020_KKelly202307.ASVs.tree.phy"
+#tree = read.tree(treefile)
+```
+
+###STEP8: Construct Phyloseq object
+To construct phyloseq object, otu table, taxonomy table, and sampleData are required. Phylogenetic tree can be included, but it is not necessary for constructing phyloseq object.
+Construct Phyloseq object called "Physeq"
+
+```{r warning=FALSE}
+physeq = phyloseq(OTU,TAX,sampleData)
+```
+
+Check phyloseq object
+This should indicate that your physeq is a "phyloseq-class experiment-level object""
+
+```{r warning=FALSE}
+physeq
+```
+
+###STEP9: Remove singletons
+Remove any OTUs that present only one time.
+
+```{r }
+physeq.prune = prune_taxa(taxa_sums(physeq) > 1, physeq)
+```
+
+```{r warning=FALSE}
+physeq.prune
+```
+
+###STEP10: Plot read counts to check dataset
+Check read counts: any samples that have very low reads should be removed.
+[Ref](http://evomics.org/wp-content/uploads/2016/01/phyloseq-Lab-01-Answers.html)
+
+```{r}
+readcount = data.table(as(sample_data(physeq.prune), "data.frame"),
+                 TotalReads = sample_sums(physeq.prune), 
+                 keep.rownames = TRUE)
+setnames(readcount, "rn", "SampleID")
+
+#For plotting, use command below.
+#SeqDepth = ggplot(readcount, aes(TotalReads)) + geom_histogram() + ggtitle("Sequencing Depth")
+```
+
+TotalReads of all the samples can be in this table (select only SampleID and TotalReads columns).
+In order to check samples with low number of reads, "order()" can be used to sort "TotalReads" column.
+In this dataset, N55.Rhizo has very low number of reads, so will will filter this sample out using the next minimum number of reads.
+```{r}
+readcount = readcount[order(readcount$TotalReads), c("SampleID", "TotalReads")]
+```
+
+```{r}
+head(readcount)
+```
+
+```{r warning=FALSE}
+set.seed(1)
+physeq.prune.rarefy = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
+physeq.prune.rarefy
+```
+
+```{r}
+Dali <- moma.colors("Dali")
+Dali
+```
+
+
+
+###STEP10: Log2foldplot, adapted from https://joey711.github.io/phyloseq-extensions/DESeq2.html
+
+Subset so that only the variables of interest are present
+
+###STEP10.01 only include surface samples 
+```{r}
+
+physeq.prune.rarefy = subset_samples(physeq.prune.rarefy, Layer=="Surface")
+
+```
+
+###STEP10.1 add 1 for every ASV to avoid infinite values
+
+```{r}
+
+
+otu_tab <- otu_table(physeq.prune.rarefy)
+
+# Convert the OTU table to a matrix
+otu_mat <- as.matrix(otu_tab)
+
+# Add one to every count in the count data
+otu_mat <- otu_mat + 1
+
+# Replace the count data in the OTU table
+otu_tab_modified <- otu_table(otu_mat, taxa_are_rows = TRUE)
+
+# Update the OTU table in the phyloseq object
+physeq.prune.rarefy.Climate_simple <- merge_phyloseq(physeq.prune.rarefy, otu_tab_modified)
+
+# Check the modified phyloseq object
+physeq.prune.rarefy.Climate_simple
+
+
+```
+
+
+###STEP10.2 convert physeq object to DEseq object
+
+```{r}
+
+
+# Run DESeq2 analysis on filtered count matrix
+DEseq_Climate_simple <- phyloseq_to_deseq2(physeq.prune.rarefy.Climate_simple, ~ Climate_simple)
+DEseq_Climate_simple <- DESeq(DEseq_Climate_simple, test="Wald", fitType="parametric")
+
+# Check results
+DEseq_Climate_simple
+```
+
+make a table of the results above specified alpha
+
+```{r}
+res = results(DEseq_Climate_simple, cooksCutoff = FALSE)
+alpha = 0.01
+sigtab = res[which(res$padj < alpha), ]
+sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(physeq.prune.rarefy.Climate_simple)[rownames(sigtab), ], "matrix"))
+head(sigtab)
+```
+
+###STEP10.3 make color pallette
+
+```{r fig.height=5, fig.width=8, fig.align="center"}
+# The palette with black:
+OKeeffe <- c("#796B58", "#1C1A18", "#95D1E6","#D2BAA4", "#96B5BC","#BB8677","#DCD0CB", "#1D633F")
+```
+
+```{r}
+# Get the Dali palette
+Dali <- moma.colors("Dali")
+
+# Add one more color to the palette
+Dali <- c(Dali, OKeeffe)
+
+# Check the updated palette
+Dali
+```
+
+###STEP10.4 plot to compare before and after surface sterilization
+
+```{r}
+theme_set(theme_bw())
+scale_fill_discrete <- function(palname = "Set1", ...) {
+    scale_fill_brewer(palette = palname, ...)
+}
+
+# Filter out rows with unknown genus
+sigtab_filtered <- subset(sigtab, !is.na(Genus) & Genus != "")
+
+# Phylum order
+x = tapply(sigtab_filtered$log2FoldChange, sigtab_filtered$Phylum, function(x) max(x))
+x = sort(x, TRUE)
+sigtab_filtered$Phylum = factor(as.character(sigtab_filtered$Phylum), levels=names(x))
+
+# Genus order
+x = tapply(sigtab_filtered$log2FoldChange, sigtab_filtered$Genus, function(x) max(x))
+x = sort(x, TRUE)
+sigtab_filtered$Genus = factor(as.character(sigtab_filtered$Genus), levels=names(x))
+
+log2plot <- ggplot(sigtab_filtered, aes(x=Genus, y=log2FoldChange, color=Class)) + 
+  geom_point(size=3) + 
+  scale_color_manual(values = Dali) + 
+  ggtitle("Desert vs coastal mycobiome log2Fold change") + 
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust=0.5, size = 6),
+        panel.grid.major.x = element_blank(),  # Remove major x-axis gridlines
+        panel.grid.minor.x = element_blank(),  # Remove minor x-axis gridlines
+        panel.grid.minor.y = element_blank())   # Remove minor x-axis gridlines
+log2plot
+
+```
+
+
+
+```{r}
+
+# Save the heatmap as a file
+ggsave("log2plot_Desert_vs_coast.png", plot = log2plot, width = 8, height = 6)
+
+```
+

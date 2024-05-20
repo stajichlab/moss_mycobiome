@@ -1,0 +1,282 @@
+---
+title: "Mojave_Div_ITS_phyloseq"
+author: "Nat Pombubpa"
+date: "Updated on December 11, 2019"
+output: html_document
+---
+
+#Fungal taxonomic barplot by site
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###STEP1: Load all necessary packages for analysis
+More information about Phyloseq can be found at the following link: [Phyloseq](https://joey711.github.io/phyloseq/)
+If you get error in this step, you probably need to install any packages which causes error.
+
+```{r warning=FALSE, message=FALSE}
+library(ape)
+library(vegan)
+library(dplyr)
+library(scales)
+library(grid)
+library(reshape2)
+library(phyloseq)
+library(magrittr)
+library(ggplot2)
+library(ggpubr)
+library(plyr)
+library(data.table)
+library(tidyr)
+library(tidyverse)
+library(multcompView)
+library(ggtree)
+library(treeio)
+library(devtools)
+library(MicEco)
+library("DESeq2")
+# install.packages("devtools")
+#devtools::install_github("BlakeRMills/MoMAColors")
+library(MoMAColors)
+```
+
+###STEP2: Import Mapping file (metadate file)
+1.Check mapping file before import to R, R doesn’t seem to like sample name to start with number or contain “-” in sample name. If you get error in this step, you should check file name first.
+
+2.First column of first row should not start with #, R will not read the first row that starts with #
+
+3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
+
+```{r}
+meta = read.table("metadata_update2.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+```
+
+If need to keep or remove some samples
+```{r}
+#meta <- meta[which(meta$Layer %in% c("Surface")),]
+```
+
+###STEP3: Check if your metadata file has been import successfully and correctly
+
+The output will show a table of your metadata file (mapping file).
+
+*If you do not have header, you might start your first row with #
+
+```{r warning=FALSE}
+head(meta)
+```
+
+###STEP4: Construct sample_data-class using imported metadata
+
+```{r}
+sampleData <- sample_data(meta)
+```
+
+###STEP5: Import OTU table
+
+OTU table from Mojave 16S data is “MC2017FC.otu_table.txt”.
+MC-Mojave Crust-2017-FC-Fungi completed
+
+```{r}
+otus <- read.table("Mojave2020_KKelly202307.otu_table.txt",header=T,sep="\t",row.names=1)
+otumat <- as(as.matrix(otus), "matrix")
+OTU = otu_table(otumat, taxa_are_rows = TRUE)
+```
+
+Check imported OTU table
+
+```{r warning=FALSE}
+head(OTU)
+```
+
+###STEP6: Import taxonomy table
+Taxonmy table generated from AMPtk need to be rearranged using following script.
+
+“perl rdp_taxonmy2mat.pl<Input_taxonmy.txt>Output_taxonomy.txt”
+
+rdp_taxonomy2mat.pl was created by Professor Jason E. Stajich
+
+```{r}
+taxmat <- read.table("Mojave2020_KKelly202307.ASVs.taxonomy.fix.txt", header=T,sep="\t",row.names=1)
+taxmat <- as(as.matrix(taxmat),"matrix")
+TAX = tax_table(taxmat)
+```
+
+###STEP7: Import phylogenetic tree
+Phylogenetic tree can also be include for further phylogenetic analysis.
+
+```{r warning=FALSE}
+#treefile = "Mojave2020_KKelly202307.ASVs.tree.phy"
+#tree = read.tree(treefile)
+```
+
+###STEP8: Construct Phyloseq object
+To construct phyloseq object, otu table, taxonomy table, and sampleData are required. Phylogenetic tree can be included, but it is not necessary for constructing phyloseq object.
+Construct Phyloseq object called "Physeq"
+
+```{r warning=FALSE}
+physeq = phyloseq(OTU,TAX,sampleData)
+```
+
+Check phyloseq object
+This should indicate that your physeq is a "phyloseq-class experiment-level object""
+
+```{r warning=FALSE}
+physeq
+```
+
+###STEP9: Remove singletons
+Remove any OTUs that present only one time.
+
+```{r }
+physeq.prune = prune_taxa(taxa_sums(physeq) > 1, physeq)
+```
+
+```{r warning=FALSE}
+physeq.prune
+```
+
+###STEP10: Plot read counts to check dataset
+Check read counts: any samples that have very low reads should be removed.
+[Ref](http://evomics.org/wp-content/uploads/2016/01/phyloseq-Lab-01-Answers.html)
+
+```{r}
+readcount = data.table(as(sample_data(physeq.prune), "data.frame"),
+                 TotalReads = sample_sums(physeq.prune), 
+                 keep.rownames = TRUE)
+setnames(readcount, "rn", "SampleID")
+
+#For plotting, use command below.
+#SeqDepth = ggplot(readcount, aes(TotalReads)) + geom_histogram() + ggtitle("Sequencing Depth")
+```
+
+TotalReads of all the samples can be in this table (select only SampleID and TotalReads columns).
+In order to check samples with low number of reads, "order()" can be used to sort "TotalReads" column.
+In this dataset, N55.Rhizo has very low number of reads, so will will filter this sample out using the next minimum number of reads.
+```{r}
+readcount = readcount[order(readcount$TotalReads), c("SampleID", "TotalReads")]
+```
+
+```{r}
+head(readcount)
+```
+
+```{r warning=FALSE}
+set.seed(1)
+physeq.prune.rarefy = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
+physeq.prune.rarefy
+```
+###STEP10: Venn Diagrams
+
+
+```{r}
+Dali <- moma.colors("Dali")
+Dali
+```
+
+
+```{r}
+
+# Create the "figures" folder if it doesn't exist
+if (!file.exists("figures")) {
+  dir.create("figures")
+}
+
+Substrate_venn <- ps_venn(physeq.prune.rarefy, "Substrate", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
+
+Substrate_venn
+```
+
+```{r}
+
+png("./figures/Substrate_venn.png", units="in", width = 6.3, height = 5.8, res = 300 )
+Substrate_venn
+dev.off()
+
+```
+
+```{r}
+
+site_venn <- ps_venn(physeq.prune.rarefy, "Site", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
+
+site_venn
+
+```
+
+```{r}
+
+png("./figures/site_venn.png", units="in", width = 5.8, height = 5.8, res = 300 )
+site_venn
+dev.off()
+
+```
+
+
+```{r}
+
+climate_venn <- ps_venn(physeq.prune.rarefy, "Climate", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
+
+climate_venn
+
+```
+
+```{r}
+
+png("./figures/climate_venn.png", units="in", width = 5.8, height = 5.8, res = 300 )
+climate_venn
+dev.off()
+
+```
+
+```{r}
+
+plant_venn <- ps_venn(physeq.prune.rarefy, "Near_plant", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
+
+plant_venn
+
+```
+
+```{r}
+
+png("./figures/plant_venn.png", units="in", width = 5.8, height = 5.8, res = 300 )
+plant_venn
+dev.off()
+
+```
+
+```{r}
+
+venn_layer <- ps_venn(physeq.prune.rarefy, "Layer", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
+
+venn_layer
+
+```
+
+```{r}
+
+png("./figures/layer_venn.png", units="in", width = 5.8, height = 5.8, res = 300 )
+venn_layer
+dev.off()
+
+```
+
+
+```{r}
+Substrates <- c("SMC.ster", "SMC")
+
+# Subset the samples based on the crust types
+physeq.prune.rarefy.Substrate <- subset_samples(physeq.prune.rarefy, Substrate %in% Substrates)
+
+venn_moss <- ps_venn(physeq.prune.rarefy.Substrate, "Substrate", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
+
+venn_moss
+```
+
+```{r}
+
+png("./figures/moss_venn.png", units="in", width = 5.8, height = 5.8, res = 300 )
+venn_moss
+dev.off()
+
+```

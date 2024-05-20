@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+	<eainfo>
+		<detailed Name="ACE_Union">
+			<attr>
+				<attrlabl>ECOREGION_SECTION</attrlabl>
+				<attalias>ECOREGION_SECTION</attalias>
+				<attrdef>Ecoregion Sections</attrdef>
+				<attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">5</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr>
+			<attr>
+				<attrlabl>OBJECTID</attrlabl>
+				<attalias>OBJECTID</attalias>
+				<attrdef>Internal feature number.</attrdef>
+				<attrtype Sync="TRUE">OID</attrtype><attwidth Sync="TRUE">4</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdefs Sync="TRUE">Esri</attrdefs><attrdomv><udom Sync="TRUE">Sequential unique whole numbers that are automatically generated.</udom></attrdomv></attr>
+			<attr>
+				<attrlabl>SHAPE</attrlabl>
+				<attalias>SHAPE</attalias>
+				<attrdef>Feature geometry.</attrdef>
+				<attrtype Sync="TRUE">Geometry</attrtype><attwidth Sync="TRUE">0</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdefs Sync="TRUE">Esri</attrdefs><attrdomv><udom Sync="TRUE">Coordinates defining the features.</udom></attrdomv></attr>
+			<attr><attrlabl Sync="TRUE">FID_USDAEcoregionsCalifornia07_3_Sections_CAClip_Feb2016Update</attrlabl><attalias Sync="TRUE">FID_USDAEcoregionsCalifornia07_3_Sections_CAClip_Feb2016Update</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">4</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr><attr>
+				<attrlabl>SHAPE_Area</attrlabl>
+				<attalias>SHAPE_Area</attalias>
+				<attrdef>Area of feature in internal units squared.</attrdef>
+				<attrtype Sync="TRUE">Double</attrtype><attwidth Sync="TRUE">8</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdefs Sync="TRUE">Esri</attrdefs><attrdomv><udom Sync="TRUE">Positive real numbers that are automatically generated.</udom></attrdomv></attr>
+			<attr><attrlabl Sync="TRUE">FID_USDA_07_3_ACEversion</attrlabl><attalias Sync="TRUE">FID_USDA_07_3_ACEversion</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">4</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr><attr>
+				<attrlabl>SHAPE_Length</attrlabl>
+				<attalias>SHAPE_Length</attalias>
+				<attrdef>Length of feature in internal units.</attrdef>
+				<attrtype Sync="TRUE">Double</attrtype><attwidth Sync="TRUE">8</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdefs Sync="TRUE">Esri</attrdefs><attrdomv><udom Sync="TRUE">Positive real numbers that are automatically generated.</udom></attrdomv></attr>
+			<enttyp><enttypl Sync="TRUE">ACE_Union</enttypl><enttypt Sync="TRUE">Feature Class</enttypt><enttypc Sync="TRUE">0</enttypc></enttyp></detailed>
+	</eainfo>
+	<dataqual>
+		<lineage>
+			<procstep>
+				<procdesc>Consolidated Data Basin Info: Metadata imported. (xmlA.tmp) 
+				 
+Dataset copied. (Server=oracle-idb.rsl.r5; Service=5151; User=fssde; Version=FSSDE.FSSDE)  
+Dataset copied. (Fssde_EcoregionsCalifornia07_1.gdb) 
+				 
+Dataset copied. (Fssde_EcoregionsCalifornia07_1.gdb) 
+				 
+Dataset copied. ( 
+				</procdesc>
+			</procstep>
+		</lineage>
+	</dataqual>
+	<idinfo>
+		<ptcontac>
+			<cntinfo>
+				<cntperp>
+					<cntper>Hazel Gordon (hgordon@fs.fed.us)</cntper>
+					<cntorg>USDA Forest Service - Pacific Southwest Region - Remote Sensing Lab</cntorg>
+				</cntperp>
+			</cntinfo>
+		</ptcontac>
+		<timeperd>
+			<timeinfo>
+				<sngdate>
+					<caldate>see Supplemental Infomation Section</caldate>
+				</sngdate>
+			</timeinfo>
+		</timeperd>
+		<useconst>Not recommended for use at scales greater than 1:24000</useconst>
+		<datacred>Goudey, C.B., and D.W. Smith, eds. 1994.Updated with ECOMAP 2007: Cleland, D.T.; Freeouf, J.A.; Keys, J.E., Jr.; Nowacki, G.J.; Carpenter, C; McNab, W.H. 2007. Ecological Subregions: Sections and Subsections of the Conterminous United States [1:3,500,000] [CD-ROM]. Sloan, A.M., cartog. Gen. Tech. Report WO-76. Washington, DC: U.S. Department of Agriculture, Forest Service.</datacred>
+		<keywords>
+			<theme>
+				<themekey>province,division,domain,section,ecological unit,subsection,ecoregion</themekey>
+			</theme>
+		</keywords>
+		<citation>
+			<citeinfo>
+				<onlink>http://databasin.org/datasets/81a3a809a2ae4c099f2e495c0b2ecc91</onlink>
+				<othercit>http://www.fs.fed.us/r5/rsl/clearinghouse/gis-download.shtmlhttp://www.fs.fed.us/land/pubs/ecoregions/intro.htmlhttp://svinetfc4.fs.fed.us/research/section/index.html</othercit>
+				<title>USDA Ecoregion Sections, California</title>
+				<origin>Goudey</origin>
+				<origin>C.B.</origin>
+				<origin>and D.W. Smith</origin>
+				<origin>eds. 1994. Updated with ECOMAP 2007: Cleland</origin>
+				<origin>D.T.; Freeouf</origin>
+				<origin>J.A.; Keys</origin>
+				<origin>J.E.</origin>
+				<origin>Jr.; Nowacki</origin>
+				<origin>G.J.; Carpenter</origin>
+				<origin>C; McNab</origin>
+				<origin>W.H. 2007. Ecological Subregions: Sections and Subsections of the Conterminous United States [1:3</origin>
+				<origin>500</origin>
+				<origin>000] [CD-ROM]. Sloan</origin>
+				<origin>A.M.</origin>
+				<origin>cartog. Gen. Tech. Report WO-76. Washington</origin>
+				<origin>DC: U.S. Department of Agriculture</origin>
+				<origin>Forest Service.</origin>
+			</citeinfo>
+		</citation>
+		<spdom>
+			<bounding>
+				<southbc>3819167.9681</southbc>
+				<northbc>5171244.0071</northbc>
+				<eastbc>-12634584.2506</eastbc>
+				<westbc>-13859924.879</westbc>
+			</bounding>
+		</spdom>
+		<descript>
+			<abstract>This layer contains polygon features of Ecological Units for the state of California as described by ECOMAP (1993) "... mapped based on associations of those biotic and environmental factors that directly affect or indirectly express energy, moisture, and nutrient gradients which regulate the structure and function of ecosystems. These factors include climate, physiography, water, soils, air, hydrology, and potential natural communities."These divisions were first created by Bailey in 1976 and have been updated since. This dataset is the 2007 (Goudey) version.This version of the ecoregion subsections was used by the California Department of Fish and Wildlife for their Areas of Conservation Emphasis work and their Wildlife Action Plan (http://www.dfg.ca.gov/biogeodata/ace/ &amp;amp; https://www.wildlife.ca.gov/SWAP/Final).Complete metadata can be found here: http://www.fs.usda.gov/detail/r5/landmanagement/gis/?cid=fsbdev3_048133. The original data can be downloaded in full here: http://www.fs.usda.gov/Internet/FSE_DOCUMENTS/stelprdb5351343.zip.</abstract>
+			<purpose>Used for National Forest planning and assessment and other natural resource applications.</purpose>
+			<supplinf>Procedures_UsedEcoregionsCalifornia07_32/16/2010, cclark, GDCorrection made in Section 263A (Northern California Coast Section). Subsection corrected to 263Ad  (Wiregrass Ridge) from previous mislabel of M261Bb (Central Franciscan) .EcoregionsCalifornia07_212/30/08 CTrillo RSLUpdated the attributes for three polygons in the Northeast portion of the EcoregionsCalifornia layer near the Modoc NF.  The attributes for the three Surprise Valley polygons had been mistakenly attributed as High Desert-Wetlands (342Bi).  The Modoc NF discovered the error and the polygons have been changed back to the correct label of Surprise Valley (342Ba).EcoregionsCalifornia07_13/3/08 CTrillo RSLUpdated EcoregionsCalifornia94_1 with EcoMap07*Buffered the California State boundary**  to 30 miles out along all sides, and used this buffered layer to clip EcoMap07.  Added polygons from EcoMap07 to EcoregionsCalifornia94_1 that were not previously in the layer.  These additional polygons were along the North and East edge between the State boundary and the 30 mile buffer.  These polygons were added to make sure no data was lost along the edges of the State boundary.  Additionally, three island boundaries were updated in the Southwest.  Of the original polygons in EcoregionsCalifornia94_1, attributes in 40 of the polygons were updated to match changes in EcoMap07.  Updated polygons for the following three Channel Islands:Santa Rosa - Got island boundary from cinms_py*** (inside buffer)Anacapa - Got island boundary from cinms_py (inside buffer)San Clemente - Got island boundary from California State Boundary* EcoMap07:  Cleland, D.T.; Freeouf, J.A.; Keys, J.E., Jr.; Nowacki, G.J.; Carpenter, C; McNab, W.H. 2007.  Ecological Subregions: Sections and Subsections of the Conterminous United States [1:3,500,000] [CD-ROM]. Sloan, A.M., cartog. Gen. Tech. Report WO-76. Washington, DC:  U.S. Department of Agriculture, Forest Service.** California State boundary:  StateAndCounty95_6, State and County Boundaries.  This layer can be found on the following website http://www.fs.fed.us/r5/rsl/clearinghouse/gis-download.shtml#county *** cimns_py: Channel Islands National Marine Sancturay Boundary (polygon).  NOAA / National Marine Sanctuaries Program.  This layer was downloaded from www.sanctuaries.noaa.gov/library/imast_gis.html.</supplinf>
+		</descript>
+	</idinfo>
+	<distinfo>
+		<techpreq>Desktop GIS software.</techpreq>
+		<stdorder>
+			<digform>
+				<digtopt>
+					<onlinopt>
+						<accinstr>Download from http://databasin.org</accinstr>
+					</onlinopt>
+					<onlineopt>
+						<computer>
+							<networka>
+								<networkr>http://databasin.org/datasets/81a3a809a2ae4c099f2e495c0b2ecc91</networkr>
+							</networka>
+						</computer>
+					</onlineopt>
+				</digtopt>
+				<digtinfo>
+					<filedec>No compression applied</filedec>
+					<formvern>ArcGIS 10</formvern>
+					<formspec>Feature Layer</formspec>
+					<formname>Feature Layer</formname>
+				</digtinfo>
+			</digform>
+			<ordering>Download from http://databasin.org</ordering>
+			<fees>None</fees>
+		</stdorder>
+		<distliab>No warranty is made by Data Basin for use of this dataset.  No warranty is made by Data Basin regarding the accuracy, reliability, or completeness of this dataset. In no event shall Data Basin have any liability whatsoever for payment of any consequential, incidental, indirect, special, or tort damages of any kind, including, but not limited to, any loss of profits arising out of the use or reliance on the geographic or attribute data contained within this dataset or arising out of the delivery, installation, operation, or support by Data Basin.</distliab>
+		<distrib>
+			<cntinfo>
+				<cntvoice>541-757-0687</cntvoice>
+				<cntemail>databasin_admin@consbio.org</cntemail>
+				<cntperp>
+					<cntorg>Data Basin</cntorg>
+					<cntper>Data Basin Administrator</cntper>
+				</cntperp>
+				<cntaddr>
+					<postal>97333</postal>
+					<city>Corvallis</city>
+					<address>136 SW Washington Ave, Suite 202</address>
+					<addrtype>physical address</addrtype>
+					<country>USA</country>
+					<state>OR</state>
+				</cntaddr>
+			</cntinfo>
+		</distrib>
+	</distinfo>
+	<Esri>
+		<CreaDate>20240229</CreaDate>
+		<CreaTime>21115500</CreaTime>
+		<ArcGISFormat>1.0</ArcGISFormat>
+		<SyncOnce>FALSE</SyncOnce>
+		<DataProperties>
+			<itemProps>
+				<itemName Sync="TRUE">ACE_Union</itemName><imsContentType Sync="TRUE">002</imsContentType></itemProps>
+			<coordRef><type Sync="TRUE">Projected</type><geogcsn Sync="TRUE">GCS_North_American_1983</geogcsn><csUnits Sync="TRUE">Linear Unit: Meter (1.000000)</csUnits><projcsn Sync="TRUE">NAD_1983_California_Teale_Albers</projcsn><peXml Sync="TRUE">&lt;ProjectedCoordinateSystem xsi:type='typens:ProjectedCoordinateSystem' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/2.9.0'&gt;&lt;WKT&gt;PROJCS[&amp;quot;NAD_1983_California_Teale_Albers&amp;quot;,GEOGCS[&amp;quot;GCS_North_American_1983&amp;quot;,DATUM[&amp;quot;D_North_American_1983&amp;quot;,SPHEROID[&amp;quot;GRS_1980&amp;quot;,6378137.0,298.257222101]],PRIMEM[&amp;quot;Greenwich&amp;quot;,0.0],UNIT[&amp;quot;Degree&amp;quot;,0.0174532925199433]],PROJECTION[&amp;quot;Albers&amp;quot;],PARAMETER[&amp;quot;False_Easting&amp;quot;,0.0],PARAMETER[&amp;quot;False_Northing&amp;quot;,-4000000.0],PARAMETER[&amp;quot;Central_Meridian&amp;quot;,-120.0],PARAMETER[&amp;quot;Standard_Parallel_1&amp;quot;,34.0],PARAMETER[&amp;quot;Standard_Parallel_2&amp;quot;,40.5],PARAMETER[&amp;quot;Latitude_Of_Origin&amp;quot;,0.0],UNIT[&amp;quot;Meter&amp;quot;,1.0],AUTHORITY[&amp;quot;EPSG&amp;quot;,3310]]&lt;/WKT&gt;&lt;XOrigin&gt;-16909700&lt;/XOrigin&gt;&lt;YOrigin&gt;-8597000&lt;/YOrigin&gt;&lt;XYScale&gt;10000&lt;/XYScale&gt;&lt;ZOrigin&gt;-100000&lt;/ZOrigin&gt;&lt;ZScale&gt;10000&lt;/ZScale&gt;&lt;MOrigin&gt;-100000&lt;/MOrigin&gt;&lt;MScale&gt;10000&lt;/MScale&gt;&lt;XYTolerance&gt;0.001&lt;/XYTolerance&gt;&lt;ZTolerance&gt;0.001&lt;/ZTolerance&gt;&lt;MTolerance&gt;0.001&lt;/MTolerance&gt;&lt;HighPrecision&gt;true&lt;/HighPrecision&gt;&lt;WKID&gt;3310&lt;/WKID&gt;&lt;LatestWKID&gt;3310&lt;/LatestWKID&gt;&lt;/ProjectedCoordinateSystem&gt;</peXml></coordRef></DataProperties>
+		<SyncDate>20220312</SyncDate><SyncTime>02163300</SyncTime><ModDate>20220312</ModDate><ModTime>02163300</ModTime></Esri>
+	<dataIdInfo><envirDesc Sync="FALSE">Esri ArcGIS 12.9.2.32739</envirDesc><dataLang><languageCode value="eng" Sync="TRUE"/><countryCode value="USA" Sync="TRUE"/></dataLang><idCitation><resTitle Sync="TRUE">ACE_Union</resTitle><presForm><PresFormCd value="005" Sync="TRUE"/></presForm></idCitation><spatRpType><SpatRepTypCd value="001" Sync="TRUE"/></spatRpType></dataIdInfo><mdLang><languageCode value="eng" Sync="TRUE"/><countryCode value="USA" Sync="TRUE"/></mdLang><distInfo><distFormat><formatName Sync="TRUE">File Geodatabase Feature Class</formatName></distFormat></distInfo><mdHrLv><ScopeCd value="005" Sync="TRUE"/></mdHrLv><mdHrLvName Sync="TRUE">dataset</mdHrLvName><refSysInfo><RefSystem><refSysID><identCode code="3310" Sync="TRUE"/><idCodeSpace Sync="TRUE">EPSG</idCodeSpace><idVersion Sync="TRUE">6.8(9.2.0)</idVersion></refSysID></RefSystem></refSysInfo><spatRepInfo><VectSpatRep><geometObjs Name="ACE_Union"><geoObjTyp><GeoObjTypCd value="002" Sync="TRUE"/></geoObjTyp><geoObjCnt Sync="TRUE">0</geoObjCnt></geometObjs><topLvl><TopoLevCd value="001" Sync="TRUE"/></topLvl></VectSpatRep></spatRepInfo><spdoinfo><ptvctinf><esriterm Name="ACE_Union"><efeatyp Sync="TRUE">Simple</efeatyp><efeageom code="4" Sync="TRUE"/><esritopo Sync="TRUE">FALSE</esritopo><efeacnt Sync="TRUE">0</efeacnt><spindex Sync="TRUE">TRUE</spindex><linrefer Sync="TRUE">FALSE</linrefer></esriterm></ptvctinf></spdoinfo><mdDateSt Sync="TRUE">20220312</mdDateSt></metadata>

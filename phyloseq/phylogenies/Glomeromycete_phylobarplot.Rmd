@@ -1,0 +1,710 @@
+---
+title: "Mojave_Div_ITS_phyloseq"
+author: "Nat Pombubpa"
+date: "Updated on December 11, 2019"
+output: html_document
+---
+
+#Fungal taxonomic barplot by site
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Faceted taxonomic barplot using phyloseq
+
+###STEP1: Load all necessary packages for analysis
+More information about Phyloseq can be found at the following link: [Phyloseq](https://joey711.github.io/phyloseq/)
+If you get error in this step, you probably need to install any packages which causes error.
+
+```{r warning=FALSE, message=FALSE}
+library(ape)
+library(vegan)
+library(dplyr)
+library(scales)
+library(grid)
+library(reshape2)
+library(phyloseq)
+library(magrittr)
+library(ggplot2)
+library(ggpubr)
+library(plyr)
+library(data.table)
+library(tidyr)
+library(tidyverse)
+library(multcompView)
+library(ggtree)
+library(treeio)
+library(devtools)
+library(MicEco)
+library(MoMAColors)
+library(castor)
+library(tibble)
+
+
+
+```
+
+
+
+####Initiallize functions
+This function was written by Joey (but it is not part of phyloseq
+package) <https://github.com/joey711/phyloseq/issues/418>
+
+Kian notes: This defines functions which will be used in future steps. fast_melt takes an input which is a physeq object, extracts OTU table, modifies this (ie removes NA Countues). summarize_taxa summarizes the relative abundance data by taxonomic rank, but can also be used with grouping variables (ie crust type) and can calculate summary stats. The result is a data.table containing mean, standard deviation, minimum, and maximum relative abundances for each taxonomic group.
+
+```{r warning=FALSE}
+fast_melt = function(physeq){
+  # supports "naked" otu_table as `physeq` input.
+  otutab = as(otu_table(physeq), "matrix")
+  if(!taxa_are_rows(physeq)){otutab <- t(otutab)}
+  otudt = data.table(otutab, keep.rownames = TRUE)
+  setnames(otudt, "rn", "taxaID")
+  # Enforce character taxaID key
+  otudt[, taxaIDchar := as.character(taxaID)]
+  otudt[, taxaID := NULL]
+  setnames(otudt, "taxaIDchar", "taxaID")
+  # Melt count table
+  mdt = melt.data.table(otudt, 
+                        id.vars = "taxaID",
+                        variable.name = "SampleID",
+                        Countue.name = "count")
+  # Remove zeroes, NAs
+  mdt <- mdt[count > 0][!is.na(count)]
+  # Calculate relative abundance
+  mdt[, RelativeAbundance := count / sum(count), by = SampleID]
+  if(!is.null(tax_table(physeq, errorIfNULL = FALSE))){
+    # If there is a tax_table, join with it. Otherwise, skip this join.
+    taxdt = data.table(as(tax_table(physeq, errorIfNULL = TRUE), "matrix"), keep.rownames = TRUE)
+    setnames(taxdt, "rn", "taxaID")
+    # Enforce character taxaID key
+    taxdt[, taxaIDchar := as.character(taxaID)]
+    taxdt[, taxaID := NULL]
+    setnames(taxdt, "taxaIDchar", "taxaID")
+    # Join with tax table
+    setkey(taxdt, "taxaID")
+    setkey(mdt, "taxaID")
+    mdt <- taxdt[mdt]
+  }
+  return(mdt)
+}
+
+summarize_taxa = function(physeq, Rank, GroupBy = NULL){
+  Rank <- Rank[1]
+  if(!Rank %in% rank_names(physeq)){
+    message("The argument to `Rank` was:\n", Rank,
+            "\nBut it was not found among taxonomic ranks:\n",
+            paste0(rank_names(physeq), collapse = ", "), "\n",
+            "Please check the list shown above and try again.")
+  }
+  if(!is.null(GroupBy)){
+    GroupBy <- GroupBy[1]
+    if(!GroupBy %in% sample_variables(physeq)){
+      message("The argument to `GroupBy` was:\n", GroupBy,
+              "\nBut it was not found among sample variables:\n",
+              paste0(sample_variables(physeq), collapse = ", "), "\n",
+              "Please check the list shown above and try again.")
+    }
+  }
+  # Start with fast melt
+  mdt = fast_melt(physeq)
+  if(!is.null(GroupBy)){
+    # Add the variable indicated in `GroupBy`, if provided.
+    sdt = data.table(SampleID = sample_names(physeq),
+                     var1 = get_variable(physeq, GroupBy))
+    setnames(sdt, "var1", GroupBy)
+    # Join
+    setkey(sdt, SampleID)
+    setkey(mdt, SampleID)
+    mdt <- sdt[mdt]
+  }
+  # Summarize
+  Nsamples = nsamples(physeq)
+  summarydt = mdt[, list(meanRA = sum(RelativeAbundance)/Nsamples,
+                         sdRA = sd(RelativeAbundance),
+                         minRA = min(RelativeAbundance),
+                         maxRA = max(RelativeAbundance)),
+                  by = c(Rank, GroupBy)]
+  return(summarydt)
+}
+
+plot_taxa_summary = function(physeq, Rank, GroupBy = NULL){
+  # Get taxa summary table 
+  dt1 = summarize_taxa(physeq, Rank = Rank, GroupBy = GroupBy)
+  # Set factor appropriately for plotting
+  RankCol = which(colnames(dt1) == Rank)
+  setorder(dt1, -meanRA)
+  dt1[, RankFac := factor(dt1[[Rank]], 
+                          levels = rev(dt1[[Rank]]))]
+  dt1[, ebarMax := max(c(0, min(meanRA + sdRA))), by = eCount(Rank)]
+  dt1[, ebarMin := max(c(0, min(meanRA - sdRA))), by = eCount(Rank)]
+  # Set zeroes to one-tenth the smallest Countue
+  ebarMinFloor = dt1[(ebarMin > 0), min(ebarMin)]
+  ebarMinFloor <- ebarMinFloor / 10
+  dt1[(ebarMin == 0), ebarMin := ebarMinFloor]
+  
+  pRank = ggplot(dt1, aes(x = meanRA, y = RankFac)) +
+    scale_x_log10() +
+    xlab("Mean Relative Abundance") +
+    ylab(Rank) +
+    theme_bw()
+  if(!is.null(GroupBy)){
+    # pRank <- pRank + facet_wrap(facets = as.formula(paste("~", GroupBy)))
+    pRank <- pRank + geom_point(mapping = aes_string(colour = GroupBy),
+                                size = 5)
+  } else {
+    # Don't include error bars for faceted version
+    pRank <- pRank + geom_errorbarh(aes(xmax = ebarMax,
+                                        xmin = ebarMin))
+  }
+  return(pRank)
+}
+```
+
+###STEP2: Import Mapping file (metadate file)
+1.Check mapping file before import to R, R doesn’t seem to like sample name to start with number or contain “-” in sample name. If you get error in this step, you should check file name first.
+
+2.First column of first row should not start with #, R will not read the first row that starts with #
+
+3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
+
+```{r}
+meta = read.table("Metadata_KHK2.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+```
+
+If need to keep or remove some samples
+```{r}
+#meta <- meta[which(meta$Layer %in% c("Surface")),]
+```
+
+###STEP3: Check if your metadata file has been import successfully and correctly
+
+The output will show a table of your metadata file (mapping file).
+
+*If you do not have header, you might start your first row with #
+
+```{r warning=FALSE}
+head(meta)
+```
+
+###STEP4: Construct sample_data-class using imported metadata
+
+```{r}
+sampleData <- sample_data(meta)
+```
+
+###STEP5: Import OTU table
+
+OTU table from Mojave 16S data is “MC2017FC.otu_table.txt”.
+MC-Mojave Crust-2017-FC-Fungi completed
+
+```{r}
+otus <- read.table("Mojave2020_KKelly202307.otu_table.txt",header=T,sep="\t",row.names=1)
+otumat <- as(as.matrix(otus), "matrix")
+OTU = otu_table(otumat, taxa_are_rows = TRUE)
+```
+
+Check imported OTU table
+
+```{r warning=FALSE}
+head(OTU)
+```
+
+###STEP6: Import taxonomy table
+Taxonmy table generated from AMPtk need to be rearranged using following script.
+
+“perl rdp_taxonmy2mat.pl<Input_taxonmy.txt>Output_taxonomy.txt”
+
+rdp_taxonomy2mat.pl was created by Professor Jason E. Stajich
+
+```{r}
+taxmat <- read.table("Mojave2020_KKelly202307.ASVs.taxonomy.fix.txt", header=T,sep="\t",row.names=1)
+taxmat <- as(as.matrix(taxmat),"matrix")
+TAX = tax_table(taxmat)
+```
+
+###STEP7: Import phylogenetic tree
+Phylogenetic tree can also be include for further phylogenetic analysis.
+
+```{r warning=FALSE}
+treefile = "Mojave2020_KKelly202307.ASVs.tree.phy"
+tree = read.tree(treefile)
+```
+
+###STEP8: Construct Phyloseq object
+To construct phyloseq object, otu table, taxonomy table, and sampleData are required. Phylogenetic tree can be included, but it is not necessary for constructing phyloseq object.
+Construct Phyloseq object called "Physeq"
+
+```{r warning=FALSE}
+physeq = phyloseq(OTU,TAX,sampleData,tree)
+```
+
+Check phyloseq object
+This should indicate that your physeq is a "phyloseq-class experiment-level object""
+
+```{r warning=FALSE}
+physeq
+```
+
+###STEP9: Remove singletons
+Remove any OTUs that present only one time.
+
+```{r }
+physeq.prune = prune_taxa(taxa_sums(physeq) > 1, physeq)
+```
+
+```{r warning=FALSE}
+physeq.prune
+```
+
+###STEP10: Plot read counts to check dataset
+Check read counts: any samples that have very low reads should be removed.
+[Ref](http://evomics.org/wp-content/uploads/2016/01/phyloseq-Lab-01-Answers.html)
+
+```{r}
+readcount = data.table(as(sample_data(physeq.prune), "data.frame"),
+                 TotalReads = sample_sums(physeq.prune), 
+                 keep.rownames = TRUE)
+setnames(readcount, "rn", "SampleID")
+
+#For plotting, use command below.
+#SeqDepth = ggplot(readcount, aes(TotalReads)) + geom_histogram() + ggtitle("Sequencing Depth")
+```
+
+TotalReads of all the samples can be in this table (select only SampleID and TotalReads columns).
+In order to check samples with low number of reads, "order()" can be used to sort "TotalReads" column.
+In this dataset, N55.Rhizo has very low number of reads, so will will filter this sample out using the next minimum number of reads.
+```{r}
+readcount = readcount[order(readcount$TotalReads), c("SampleID", "TotalReads")]
+```
+
+```{r}
+head(readcount)
+```
+
+```{r warning=FALSE}
+set.seed(1)
+physeq.prune.rarefy = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
+physeq.prune.rarefy
+```
+
+###STEP11: Building dataframe for ASV taxonomy and tip labels
+#### this will be used for later steps generating a dataframe for counts across metadata including Site and crust_type for plotting the tree with a bar plot. It will also be used for labeling tips by taxonomy in ggtree.
+
+#### Subset Glomeromycete class
+```{r}
+physeq.prune.rarefy.Glomeromycetes <- subset_taxa(physeq.prune.rarefy, Class == "Glomeromycetes")
+```
+
+#### Extract taxa names from the taxonomy table, want to select lowest level of taxonomic higherarchy
+```{r}
+# Extract taxonomy table for Glomeromycetes
+tax_table_prune <- tax_table(physeq.prune.rarefy.Glomeromycetes)
+
+species_names <- tax_table_prune[, "Species"]
+
+# If there is an NA at the lowest taxonomic level, store the taxonomic info for hte next highest rank. 
+
+species_names[is.na(species_names)] <-  tax_table_prune[, "Genus"]
+
+species_names[is.na(species_names)] <-  tax_table_prune[, "Order"]
+
+species_names[is.na(species_names)] <-  tax_table_prune[, "Family"]
+
+species_names[is.na(species_names)] <-  tax_table_prune[, "Class"]
+
+```
+
+#### Make dataframe for tip label taxonomy and ASV ID. Note: Some taxa have zero counts which need to be removed later
+```{r}
+
+# Get the tip labels (ASV IDs) from the phylogenetic tree
+tip_labels <- phy_tree(physeq.prune.rarefy.Glomeromycetes)$tip.label
+
+# Match ASV IDs with species names and replace tip labels
+new_tip_labels <- as.data.frame(species_names[match(tip_labels, rownames(species_names))])
+# Change rownames to column named ID
+new_tip_labels <- rownames_to_column(new_tip_labels, "ID")
+
+#Change species column name to taxonomy
+colnames(new_tip_labels)[colnames(new_tip_labels) == "Species"] <- "Taxonomy"
+
+new_tip_labels
+```
+
+###STEP12: Building the site dataframe for ASV counts and ratios
+#### Get counts of each taxa by site and create a final dataframe with ratios of ASV counts per site and total ASV count. 
+
+#### Subset samples by site
+```{r}
+physeq.prune.rarefy.GlomeromycetesAB <- subset_samples(physeq.prune.rarefy.Glomeromycetes, Site == "AB")
+
+physeq.prune.rarefy.GlomeromycetesODLO <- subset_samples(physeq.prune.rarefy.Glomeromycetes, Site == "ODLO")
+
+physeq.prune.rarefy.GlomeromycetesTP <- subset_samples(physeq.prune.rarefy.Glomeromycetes, Site == "TP")
+
+physeq.prune.rarefy.GlomeromycetesCIMA <- subset_samples(physeq.prune.rarefy.Glomeromycetes, Site == "CIMA")
+
+physeq.prune.rarefy.GlomeromycetesGMT <- subset_samples(physeq.prune.rarefy.Glomeromycetes, Site == "GMT")
+
+```
+
+#### Sum all taxa for each site
+```{r}
+
+#sample_data <- as.data.frame(sample_data(physeq.prune.rarefy.Glomeromycetes))
+
+AB = taxa_sums(physeq.prune.rarefy.GlomeromycetesAB)
+
+
+TP = taxa_sums(physeq.prune.rarefy.GlomeromycetesTP)
+
+
+GMT = taxa_sums(physeq.prune.rarefy.GlomeromycetesGMT)
+
+
+CIMA = taxa_sums(physeq.prune.rarefy.GlomeromycetesCIMA)
+
+
+ODLO = taxa_sums(physeq.prune.rarefy.GlomeromycetesODLO)
+
+```
+#### Make a df for each site's taxa count table with tip labels
+
+#### Anza Borrego df
+```{r}
+# Create counts dataframe
+AB.df <- data.frame(AB)
+# Change rowname to ID column
+AB.df <- rownames_to_column(AB.df, "ID")
+# Add site column
+AB.df <- AB.df %>%
+  mutate(Site = "AB")
+# Change column name to Count
+colnames(AB.df)[colnames(AB.df) == "AB"] <- "Count"
+
+AB.df
+```
+#### Granite mountains df
+
+```{r}
+
+# Create counts dataframe
+
+GMT.df <- data.frame(GMT)
+# Change rowname to coumn called ID
+GMT.df <- rownames_to_column(GMT.df, "ID")
+# Add site column
+GMT.df <- GMT.df %>%
+  mutate(Site = "GMT")
+# Change colname to Count
+colnames(GMT.df)[colnames(GMT.df) == "GMT"] <- "Count"
+
+GMT.df
+```
+
+#### torrey pines df
+
+
+```{r}
+
+#torrey pines
+
+TP.df <- data.frame(TP)
+
+TP.df <- rownames_to_column(TP.df, "ID")
+
+TP.df <- TP.df %>%
+  mutate(Site = "TP")
+
+colnames(TP.df)[colnames(TP.df) == "TP"] <- "Count"
+
+TP.df
+```
+
+#### Oasis De Los Osos df
+
+
+```{r}
+
+#Oasis De Los Osos
+
+ODLO.df <- data.frame(ODLO)
+ODLO.df <- rownames_to_column(ODLO.df, "ID")
+
+ODLO.df <- ODLO.df %>%
+  mutate(Site = "ODLO")
+
+colnames(ODLO.df)[colnames(ODLO.df) == "ODLO"] <- "Count"
+
+ODLO.df
+```
+
+
+#### CIMA Volcanic field df
+
+
+```{r}
+
+#CIMA volcanic field
+
+CIMA.df <- data.frame(CIMA)
+CIMA.df <- rownames_to_column(CIMA.df, "ID")
+
+CIMA.df <- CIMA.df %>%
+  mutate(Site = "CIMA")
+
+colnames(CIMA.df)[colnames(CIMA.df) == "CIMA"] <- "Count"
+
+CIMA.df
+```
+#### combine the dataframes for Site and get ratio of ASV Site total / ASV total for all samples
+
+
+```{r}
+
+# Create unified df for the sites
+Site.df <- rbind(AB.df, TP.df, GMT.df, CIMA.df, ODLO.df)
+# Get all ASV total sums
+asv_sums_Site <- setNames(data.frame(taxa_sums(physeq.prune.rarefy.Glomeromycetes)), c("ASV_sum"))
+# Change colname to ID
+asv_sums_Site <- rownames_to_column(asv_sums_Site, "ID")
+# Merge based on ID column
+Site.df.ratio <- merge(Site.df, asv_sums_Site, by = "ID", all.x = TRUE)
+# Create ratio column for counts by site / total
+Site.df.ratio$ratio <- (Site.df.ratio$Count / Site.df.ratio$ASV_sum)
+# Filter out everything with 0 count in sum
+Site.df.ratio <- filter(Site.df.ratio, ASV_sum > 0)
+
+
+Site.df.ratio
+
+```
+
+
+###STEP13: Get counts by crust_type
+#### Get counts of each taxa by crust_type. 
+
+####subset by crust_type
+
+```{r}
+physeq.prune.rarefy.GlomeromycetesSMC <- subset_samples(physeq.prune.rarefy.Glomeromycetes, Crust_type == "SMC")
+
+physeq.prune.rarefy.GlomeromycetesSMC.ster <- subset_samples(physeq.prune.rarefy.Glomeromycetes, Crust_type == "SMC.ster")
+
+physeq.prune.rarefy.GlomeromycetesDirt <- subset_samples(physeq.prune.rarefy.Glomeromycetes, Crust_type == "Dirt")
+
+physeq.prune.rarefy.GlomeromycetesSMC.sub <- subset_samples(physeq.prune.rarefy.Glomeromycetes, Crust_type == "SMC.sub")
+
+```
+
+
+
+#### Get counts for each crust_type
+```{r}
+#sample_data <- as.data.frame(sample_data(physeq.prune.rarefy.Glomeromycetes))
+
+SMC = taxa_sums(physeq.prune.rarefy.GlomeromycetesSMC)
+
+Dirt = taxa_sums(physeq.prune.rarefy.GlomeromycetesDirt)
+
+SMC.ster = taxa_sums(physeq.prune.rarefy.GlomeromycetesSMC.ster)
+
+SMC.sub = taxa_sums(physeq.prune.rarefy.GlomeromycetesSMC.sub)
+
+```
+
+#### Make dataframes for each Crust_type
+
+#### SMC dataframe
+```{r}
+
+SMC.df <- data.frame(SMC)
+SMC.df <- rownames_to_column(SMC.df, "ID")
+SMC.df <- SMC.df %>%
+  mutate(Crust_type = "SMC")
+
+colnames(SMC.df)[colnames(SMC.df) == "SMC"] <- "Count"
+
+SMC.df
+```
+
+#### SMC.ster dataframe
+
+```{r}
+
+SMC.ster.df <- data.frame(SMC.ster)
+SMC.ster.df <- rownames_to_column(SMC.ster.df, "ID")
+
+SMC.ster.df <- SMC.ster.df %>%
+  mutate(Crust_type = "SMC.ster")
+
+colnames(SMC.ster.df)[colnames(SMC.ster.df) == "SMC.ster"] <- "Count"
+
+SMC.ster.df
+```
+
+#### SMC.sub dataframe
+
+
+```{r}
+
+SMC.sub.df <- data.frame(SMC.sub)
+SMC.sub.df <- rownames_to_column(SMC.sub.df, "ID")
+
+SMC.sub.df <- SMC.sub.df %>%
+  mutate(Crust_type = "SMC.sub")
+
+colnames(SMC.sub.df)[colnames(SMC.sub.df) == "SMC.sub"] <- "Count"
+SMC.sub.df
+```
+
+
+#### Dirt dataframe
+
+
+```{r}
+
+Dirt.df <- data.frame(Dirt)
+Dirt.df <- rownames_to_column(Dirt.df, "ID")
+Dirt.df <- Dirt.df %>%
+  mutate(Crust_type = "Dirt")
+
+colnames(Dirt.df)[colnames(Dirt.df) == "Dirt"] <- "Count"
+
+Dirt.df
+```
+
+#### combine the dataframes for crust_type and get ratio of ASV Crust_type total / ASV total for all samples
+```{r}
+# Create unified df for sites
+Crust_type.df <- rbind(SMC.df, SMC.ster.df, Dirt.df, SMC.sub.df)
+# Get sums for all taxa, rename column ID
+asv_sums_Crust_type <- setNames(data.frame(taxa_sums(physeq.prune.rarefy.Glomeromycetes)), c("ASV_sum"))
+
+asv_sums_Crust_type <- rownames_to_column(asv_sums_Crust_type, "ID")
+# Merge by ID column
+Crust_type.df.ratio <- merge(Crust_type.df, asv_sums_Crust_type, by = "ID", all.x = TRUE)
+# Create ratio column 
+Crust_type.df.ratio$ratio <- (Crust_type.df.ratio$Count / Crust_type.df.ratio$ASV_sum)
+# Filter out 0 count taxa
+Crust_type.df.ratio <- filter(Crust_type.df.ratio, ASV_sum > 0)
+
+
+Crust_type.df.ratio
+```
+### STEP14: Plot tree
+
+#### Generate a palette of colors
+```{r}
+Dali <- moma.colors("Dali")
+
+```
+#### Plot Glomeromycete tree with metadata
+```{r}
+# Read in glomeromycete tree
+tree <- phy_tree(physeq.prune.rarefy.Glomeromycetes)
+# drop tips not present in metadata
+to_drop <- setdiff(tree$tip.label, Crust_type.df.ratio$ID)
+tree <- drop.tip(tree, to_drop)
+# Plot with ggtree using new_tip_labels containing species info
+
+p1 <- ggtree(tree, layout="rectangular") %<+% new_tip_labels + geom_tippoint(aes(color=Taxonomy), size=2) +
+  scale_color_manual(values = Dali) 
+
+#plot a test tree to find nodes for labeling
+ptest <- ggtree(tree, layout="rectangular",size=1,aes(color=as.numeric(label))) +
+  scale_color_gradient("Bootstrap", low = "green", high = "black", limits=c(0,1)) + 
+  geom_text2(aes(subset=!isTip, 
+label=node)) +
+  geom_tiplab(size=2, color="black") + theme(legend.position = "bottom")
+
+
+plot(p1)
+ptest
+```
+#### Save the test treeand check nodes for labeling
+
+
+```{r}
+
+# Save the test and check nodes for labeling
+ggsave("test.png", plot = ptest, width = 17, height = 9)
+
+```
+
+
+###STEP15: Plot faceted tree
+```{r fig.height=5, fig.width=8, fig.align="center"}
+# The palette with black:
+OKeeffe <- c("#796B58", "#1C1A18", "#95D1E6","#D2BAA4", "#96B5BC","#BB8677","#DCD0CB", "#1D633F")
+```
+
+```{r}
+# Get the Dali palette
+Dali <- moma.colors("Dali")
+OKeeffe2 <- moma.colors("OKeeffe")
+
+# Add one more color to the palette
+Dali <- c(Dali, OKeeffe, OKeeffe2)
+
+OKeeffe3 <- c(OKeeffe, OKeeffe2)
+# Check the updated palette
+Dali
+```
+
+```{r}
+#drop tips not in metadata
+
+p2 <- facet_plot(p1, panel = 'ASV Relative Abundance by Substrate', data = Crust_type.df.ratio, 
+				geom = geom_barh, 
+				mapping = aes(x = ratio, fill = Crust_type), 
+				stat='identity' ) +
+  scale_fill_manual(values = OKeeffe3)
+p2
+
+```
+
+
+
+```{r}
+
+p3 <- facet_plot(p2, panel = 'ASV Relative Abundance by Site', data = Site.df.ratio, 
+				geom = geom_barh, 
+				mapping = aes(x = ratio, fill = Site), 
+				stat='identity' ) + guides(fill=guide_legend(title="Barplot Legend")) + 
+  scale_fill_manual(values = OKeeffe3, breaks = c("AB", "CIMA", "GMT", "ODLO", "TP", "Dirt", "SMC","SMC.ster","SMC.sub"), labels = c("Anza Borrego", "CIMA Volcanic Field", "Gramite Mountains", "Oasis De Los Osos", "Torrey Pines", "Dirt", "Moss Crust","Sterile Moss","Subsurface")) +
+    scale_x_ggtree()
+p3
+
+```
+
+```{r}
+
+# Save the heatmap as a file
+ggsave("glomeromycetebarplot_final.png", plot = p3, width = 17, height = 9)
+
+```
+
+```{r}
+#drop tips not in metadata
+
+ptest <- facet_plot(p1, panel = 'ASV Relative Abundance by Substrate', data = Crust_type.df.ratio, 
+				geom = geom_barh, 
+				mapping = aes(x = Count, fill = Crust_type), 
+				stat='identity' ) +
+  scale_fill_manual(values = OKeeffe3)
+ptest
+
+```
+```{r}
+
+ptest2 <- facet_plot(ptest, panel = 'ASV Relative Abundance by Site', data = Site.df.ratio, 
+				geom = geom_barh, 
+				mapping = aes(x = Count, fill = Site), 
+				stat='identity' ) + guides(fill=guide_legend(title="Barplot Legend")) + 
+  scale_fill_manual(values = OKeeffe3, breaks = c("AB", "CIMA", "GMT", "ODLO", "TP", "Dirt", "SMC","SMC.ster","SMC.sub"), labels = c("Anza Borrego", "CIMA Volcanic Field", "Gramite Mountains", "Oasis De Los Osos", "Torrey Pines", "Dirt", "Moss Crust","Sterile Moss","Subsurface")) +
+    scale_x_ggtree()
+ptest2
+
+```
