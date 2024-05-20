@@ -38,10 +38,6 @@ First, run BCL convert to demultiplez the library. Then, use AMPtk for the follo
    - If not, run a Perl script (`rdp_taxonmy2mat.pl`) to fix the taxonomy format.
    - Save the fixed taxonomy file as `$BASE.taxonomy.fix.txt`.
 
-7. **Statistical Analysis**:
-   - Check if the phylogenetic tree file (`$BASE.ASVs.tree.phy`) exists.
-   - If not, run the AMPtk `amptk stats` command to calculate various statistics on the data, potentially including alpha and beta diversity metrics.
-   - Save the output statistics for further analysis.
-  
 #### Phyloseq:
-Phyloseq, ggplot, and ggtree were used for all data visualization purposes. 
+Phyloseq, ggplot, and ggtree were used for all data visualization purposes. Samples were rarefied based on the lowest sample read count and singletons were removed. Most phyloseq pipelines were adapted from "Insights into dryland biocrust microbiome: geography, soil depth and crust type affect biocrust microbial communities and networks in Mojave Desert, USA", by Pombupba et. al 2019. 
+
