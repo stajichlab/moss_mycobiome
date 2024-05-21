@@ -1,11 +1,11 @@
 ---
-title: "Mojave_Div_ITS_phyloseq"
-author: "Nat Pombubpa"
-date: "Updated on December 11, 2019"
+title: "DEseq Log2fold plot climate"
+author: "Kian Kelly"
+date: "Updated on 5/24"
 output: html_document
 ---
 
-#Fungal taxonomic barplot by site
+#DEseq Log2fold plot climate
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -49,7 +49,7 @@ library(MoMAColors)
 3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
 
 ```{r}
-meta = read.table("metadata_update3.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
 ```
 
 If need to keep or remove some samples
@@ -164,8 +164,8 @@ head(readcount)
 
 ```{r warning=FALSE}
 set.seed(1)
-physeq.prune.rarefy = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
-physeq.prune.rarefy
+#physeq.prune.SF.SF = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
+#physeq.prune.SF.SF
 ```
 
 ```{r}
@@ -182,7 +182,7 @@ Subset so that only the variables of interest are present
 ###STEP10.01 only include surface samples 
 ```{r}
 
-physeq.prune.rarefy = subset_samples(physeq.prune.rarefy, Layer=="Surface")
+physeq.prune.SF.SF = subset_samples(physeq.prune, Layer=="Surface")
 
 ```
 
@@ -191,7 +191,7 @@ physeq.prune.rarefy = subset_samples(physeq.prune.rarefy, Layer=="Surface")
 ```{r}
 
 
-otu_tab <- otu_table(physeq.prune.rarefy)
+otu_tab <- otu_table(physeq.prune.SF.SF)
 
 # Convert the OTU table to a matrix
 otu_mat <- as.matrix(otu_tab)
@@ -203,10 +203,10 @@ otu_mat <- otu_mat + 1
 otu_tab_modified <- otu_table(otu_mat, taxa_are_rows = TRUE)
 
 # Update the OTU table in the phyloseq object
-physeq.prune.rarefy.Climate_simple <- merge_phyloseq(physeq.prune.rarefy, otu_tab_modified)
+physeq.prune.SF.SF.Climate_simple <- merge_phyloseq(physeq.prune.SF.SF, otu_tab_modified)
 
 # Check the modified phyloseq object
-physeq.prune.rarefy.Climate_simple
+physeq.prune.SF.SF.Climate_simple
 
 
 ```
@@ -218,7 +218,7 @@ physeq.prune.rarefy.Climate_simple
 
 
 # Run DESeq2 analysis on filtered count matrix
-DEseq_Climate_simple <- phyloseq_to_deseq2(physeq.prune.rarefy.Climate_simple, ~ Climate_simple)
+DEseq_Climate_simple <- phyloseq_to_deseq2(physeq.prune.SF.SF.Climate_simple, ~ Climate_simple)
 DEseq_Climate_simple <- DESeq(DEseq_Climate_simple, test="Wald", fitType="parametric")
 
 # Check results
@@ -231,7 +231,7 @@ make a table of the results above specified alpha
 res = results(DEseq_Climate_simple, cooksCutoff = FALSE)
 alpha = 0.01
 sigtab = res[which(res$padj < alpha), ]
-sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(physeq.prune.rarefy.Climate_simple)[rownames(sigtab), ], "matrix"))
+sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(physeq.prune.SF.SF.Climate_simple)[rownames(sigtab), ], "matrix"))
 head(sigtab)
 ```
 

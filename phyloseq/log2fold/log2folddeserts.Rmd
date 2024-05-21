@@ -49,7 +49,7 @@ library(MoMAColors)
 3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
 
 ```{r}
-meta = read.table("metadata_update3.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
 ```
 
 If need to keep or remove some samples
@@ -163,9 +163,9 @@ head(readcount)
 ```
 
 ```{r warning=FALSE}
-set.seed(1)
-physeq.prune.rarefy = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
-physeq.prune.rarefy
+#set.seed(1)
+#physeq.prune = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
+#physeq.prune
 ```
 
 ```{r}
@@ -182,7 +182,7 @@ Subset so that only the variables of interest are present
 ###STEP10.01 only include surface samples 
 ```{r}
 
-physeq.prune.rarefy = subset_samples(physeq.prune.rarefy, Layer=="Surface")
+physeq.prune = subset_samples(physeq.prune, Layer=="Surface")
 
 ```
 
@@ -191,9 +191,9 @@ Subset so that only the variables of interest are present
 deserts <- c("Mojave_Desert", "Colorado_Desert")
 
 # Subset the samples based on the crust types
-physeq.prune.rarefy.Climate <- subset_samples(physeq.prune.rarefy, Climate %in% deserts)
+physeq.prune.Climate <- subset_samples(physeq.prune, Climate %in% deserts)
 
-physeq.prune.rarefy.Climate
+physeq.prune.Climate
 ```
 
 
@@ -202,7 +202,7 @@ physeq.prune.rarefy.Climate
 ```{r}
 
 
-otu_tab <- otu_table(physeq.prune.rarefy.Climate)
+otu_tab <- otu_table(physeq.prune.Climate)
 
 # Convert the OTU table to a matrix
 otu_mat <- as.matrix(otu_tab)
@@ -214,10 +214,10 @@ otu_mat <- otu_mat + 1
 otu_tab_modified <- otu_table(otu_mat, taxa_are_rows = TRUE)
 
 # Update the OTU table in the phyloseq object
-physeq.prune.rarefy.Climate <- merge_phyloseq(physeq.prune.rarefy.Climate, otu_tab_modified)
+physeq.prune.Climate <- merge_phyloseq(physeq.prune.Climate, otu_tab_modified)
 
 # Check the modified phyloseq object
-physeq.prune.rarefy.Climate
+physeq.prune.Climate
 
 
 ```
@@ -229,7 +229,7 @@ physeq.prune.rarefy.Climate
 
 
 # Run DESeq2 analysis on filtered count matrix
-DEseq_Climate <- phyloseq_to_deseq2(physeq.prune.rarefy.Climate, ~ Climate)
+DEseq_Climate <- phyloseq_to_deseq2(physeq.prune.Climate, ~ Climate)
 DEseq_Climate <- DESeq(DEseq_Climate, test="Wald", fitType="parametric")
 
 # Check results
@@ -242,7 +242,7 @@ make a table of the results above specified alpha
 res = results(DEseq_Climate, cooksCutoff = FALSE)
 alpha = 0.01
 sigtab = res[which(res$padj < alpha), ]
-sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(physeq.prune.rarefy.Climate)[rownames(sigtab), ], "matrix"))
+sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(physeq.prune.Climate)[rownames(sigtab), ], "matrix"))
 head(sigtab)
 ```
 
