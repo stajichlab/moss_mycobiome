@@ -153,7 +153,7 @@ Kian notes:
 I excluded Nat's samples from this analysis by removing them from the metadata file. 
 
 ```{r}
-meta = read.table("Metadata_KHK2.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
 ```
 
 ###STEP3: Check if your metadata file has been imported successfully 

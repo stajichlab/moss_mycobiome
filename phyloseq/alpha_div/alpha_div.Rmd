@@ -155,7 +155,7 @@ Kian notes:
 I excluded Nat's samples from this analysis by removing them from the metadata file. 
 
 ```{r}
-meta = read.table("metadata_update2.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
 ```
 
 ###STEP3: Check if your metadata file has been imported successfully 
@@ -405,7 +405,7 @@ physeq.prune.rarefy.SF = subset_samples(physeq.prune.rarefy, Layer=="Surface")
 
 ```{r}
 physeq.prune.rarefy.SF = subset_samples(physeq.prune.rarefy, Layer=="Surface")
-sample_data(physeq.prune.rarefy.SF)$Site = factor(sample_data(physeq.prune.rarefy.SF)$Site, levels = c("CIMA", "ODLO", "AB", "GMT","TP"))
+sample_data(physeq.prune.rarefy.SF)$Site = factor(sample_data(physeq.prune.rarefy.SF)$Site, levels = c("CIMA", "ODLO", "AB", "GMT","TP", "TP2"))
 ```
 
 ```{r}
@@ -440,7 +440,7 @@ LABELS
 ```
 
 ```{r}
-ylabel <- data.frame("ylabel" = c(245,235,215,175,135))
+ylabel <- data.frame("ylabel" = c(245,235,215,175,135,135))
 LABELS$ylabel<-ylabel$ylabel
 LABELS
 ```
