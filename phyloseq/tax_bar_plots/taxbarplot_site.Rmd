@@ -1,7 +1,7 @@
 ---
 title: "Mojave_Div_ITS_phyloseq"
-author: "Nat Pombubpa"
-date: "Updated on December 11, 2019"
+author: "Nat Pombubpa and a bit by Kian Kelly"
+date: "Updated on 5/24"
 output: html_document
 ---
 
@@ -43,7 +43,7 @@ library(MoMAColors)
 3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
 
 ```{r}
-meta = read.table("Metadata_KHK2.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
 ```
 
 If need to keep or remove some samples
@@ -234,18 +234,18 @@ unique((data_glom.fun$Class))
 Create levels of phyla represented in barplot. Levels appear on the barplot in the order they are listed. REMEMBER FIX MANUALLY FOR EVERY Iteration
 
 ```{r}
-data_glom.fun$Class <- factor(data_glom.fun$Class, levels = c("Agaricomycetes", "Dothideomycetes", "Sordariomycetes", "Microbotryomycetes", "Unknown", "Eurotiomycetes","Saccharomycetes", "Rhizophlyctidomycetes", "Glomeromycetes", "Tremellomycetes","Lecanoromycetes","Pezizomycetes","Leotiomycetes","<1% abund."))
+data_glom.fun$Class <- factor(data_glom.fun$Class, levels = c("Agaricomycetes", "Dothideomycetes", "Pezizomycetes", "Sordariomycetes", "Unknown", "Microbotryomycetes","Eurotiomycetes", "Rhizophlyctidomycetes", "Saccharomycetes", "Glomeromycetes","Tremellomycetes","Lecanoromycetes","Leotiomycetes","Basidiobolomycetes","Mortierellomycetes","<1% abund."))
 ```
 
 ###Create barplot of phyla - use facet_grid to separate samples by a variable ie in mapping file. Choose colors for plot in scale_fill_manual. color names can be found at http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf *amount of colors must match amount of level in phyla column
 
 ```{r}
-data_glom.fun$Site = factor(data_glom.fun$Site, levels = c("AB", "CIMA", "ODLO", "TP","GMT"))
+data_glom.fun$Site = factor(data_glom.fun$Site, levels = c("AB", "CIMA", "ODLO", "TP","TP2","GMT"))
 ```
 
 ```{r fig.height=5, fig.width=8, fig.align="center"}
 # The palette with black:
-OKeeffe <- c("#796B58", "#1C1A18", "#95D1E6","#D2BAA4", "#96B5BC")
+OKeeffe <- c("#796B58", "#1C1A18", "#95D1E6","#D2BAA4", "#96B5BC", "azure2", "azure3")
 ```
 
 ```{r}

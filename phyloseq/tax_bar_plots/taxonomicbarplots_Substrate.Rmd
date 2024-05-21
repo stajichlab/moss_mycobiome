@@ -1,11 +1,11 @@
 ---
-title: "Mojave_Div_ITS_phyloseq"
-author: "Nat Pombubpa"
-date: "Updated on December 11, 2019"
+title: "tax bar plots substrate"
+author: "Nat Pombubpa, a bit by Kian Kelly"
+date: "Updated 04/2024"
 output: html_document
 ---
 
-#Fungal taxonomic barplot by Crust_type
+#Fungal taxonomic barplot by Substrate
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -43,7 +43,7 @@ library(MoMAColors)
 3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
 
 ```{r}
-meta = read.table("Metadata_KHK2.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
 ```
 
 If need to keep or remove some samples
@@ -158,7 +158,7 @@ head(readcount)
 
 ```{r warning=FALSE}
 set.seed(1)
-physeq.prune.rarefy = rarefy_even_depth(physeq.prune, sample.size = 5208, replace = FALSE, trimOTUs = FALSE)
+physeq.prune.rarefy = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
 physeq.prune.rarefy
 ```
 
@@ -195,8 +195,8 @@ tax_table(glom.fun)
 ##Samples can also be merged together by a variable in the mapping file
 
 ```{r}
-fun.abund <- merge_samples(glom.fun, "Crust_type")
-sample_data(fun.abund)$Crust_type <- factor(sample_names(fun.abund))
+fun.abund <- merge_samples(glom.fun, "Substrate")
+sample_data(fun.abund)$Substrate <- factor(sample_names(fun.abund))
 fun.abund = transform_sample_counts(fun.abund, function(x) x / sum(x))
 fun.abund
 ```
@@ -230,22 +230,22 @@ unique((data_glom.fun$Class))
 Create levels of phyla represented in barplot. Levels appear on the barplot in the order they are listed
 
 ```{r}
-data_glom.fun$Class <- factor(data_glom.fun$Class, levels = c("Agaricomycetes", "Sordariomycetes", "Microbotryomycetes", "Dothideomycetes", "Eurotiomycetes", "Unknown", "Saccharomycetes","Pezizomycetes", "Rhizophlyctidomycetes", "Tremellomycetes", "Glomeromycetes","Leotiomycetes","Mortierellomycetes","<1% abund."))
+data_glom.fun$Class <- factor(data_glom.fun$Class, levels = c("Agaricomycetes", "Sordariomycetes", "Dothideomycetes", "Microbotryomycetes", "Unknown", "Eurotiomycetes", "Pezizomycetes","Saccharomycetes", "Tremellomycetes", "Rhizophlyctidomycetes", "Mortierellomycetes","Glomeromycetes","Leotiomycetes","Basidiobolomycetes", "Lecanoromycetes", "<1% abund."))
 ```
 
 
 ###Create barplot of phyla - use facet_grid to separate samples by a variable ie in mapping file. Choose colors for plot in scale_fill_manual. color names can be found at http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf *amount of colors must match amount of level in phyla column
 
 ```{r}
-data_glom.fun$Crust_type = factor(data_glom.fun$Crust_type, levels = c("Moss Crust","Subsurface", "Dirt", "Surface Sterile"))
+data_glom.fun$Substrate = factor(data_glom.fun$Substrate, levels = c("Moss Crust","Subsurface", "Dirt", "Surface Sterile"))
 ```
 ```{r}
-data_glom.fun$Site = factor(data_glom.fun$Site, levels = c("AB", "CIMA", "ODLO", "TP","GMT"))
+data_glom.fun$Site = factor(data_glom.fun$Site, levels = c("AB", "CIMA", "ODLO", "TP","GMT", "TP2"))
 ```
 
 ```{r fig.height=5, fig.width=8, fig.align="center"}
 # The palette with black:
-OKeeffe <- c("#796B58", "#1C1A18", "#95D1E6","#D2BAA4", "#96B5BC")
+OKeeffe <- c("#796B58", "#1C1A18", "#95D1E6","#D2BAA4", "#96B5BC", "azure2", "azure3")
 ```
 
 ```{r}
@@ -261,7 +261,7 @@ Dali
 
 ```{r fig.height=5, fig.width=8, fig.align="center"}
 
-taxcom_layer_pl = ggplot(data = data_glom.fun, mapping = aes_string(x = "Crust_type" ,y = "Abundance", fill = "Class" )) + 
+taxcom_layer_pl = ggplot(data = data_glom.fun, mapping = aes_string(x = "Substrate" ,y = "Abundance", fill = "Class" )) + 
   geom_bar(stat="identity", position="fill") + 
   ggtitle("Fungal Taxonomic Composition (Class level) by Crust type")+
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
@@ -270,7 +270,7 @@ print(taxcom_layer_pl)
 ```
 
 ```{r}
-png("./Figures/Fungal_Taxonomic_Composition_(Class_level)_by_Crust_type.png", units="in", width = 5.8, height = 5.8, res = 300 )
+png("./Figures/Fungal_Taxonomic_Composition_(Class_level)_by_Substrate.png", units="in", width = 5.8, height = 5.8, res = 300 )
 taxcom_layer_pl
 dev.off()
 ```
