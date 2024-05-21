@@ -13,11 +13,13 @@ First, run BCL convert to demultiplez the library. Then, use AMPtk for the follo
    - If not, run the AMPtk Illumina pipeline to process the raw data, including merging paired-end reads, removing primers, and filtering sequences based on quality and length.
    - Save the processed output with the base name `$BASE`.
 
-2. **OTU Clustering**:
+2. **OTU/ASV Clustering**:
    - Load necessary modules and set up environment variables.
    - Check if the demultiplexed FASTQ file exists. If not, exit with an error message.
    - If the demultiplexed file exists, perform OTU clustering using AMPtk's `amptk cluster` command. Cluster sequences based on similarity, remove chimeric sequences, and generate a list of representative OTU sequences.
+   - Same thing for ASVs except uses dada2 to cluster ASVs
    - Save the clustered OTUs with the base name `$BASE.cluster.otus.fa`.
+   - Note, ASVs were used in all figures.
 
 3. **Filtering OTUs**:
    - Check if the filtered OTU sequences file (`$BASE.filtered.otus.fa`) exists.
@@ -37,7 +39,60 @@ First, run BCL convert to demultiplez the library. Then, use AMPtk for the follo
    - Check if the fixed taxonomy file (`$BASE.taxonomy.fix.txt`) exists.
    - If not, run a Perl script (`rdp_taxonmy2mat.pl`) to fix the taxonomy format.
    - Save the fixed taxonomy file as `$BASE.taxonomy.fix.txt`.
+---
 
 #### Phyloseq:
-Phyloseq, ggplot, and ggtree were used for all data visualization purposes. Samples were rarefied based on the lowest sample read count and singletons were removed. Most phyloseq pipelines were adapted from "Insights into dryland biocrust microbiome: geography, soil depth and crust type affect biocrust microbial communities and networks in Mojave Desert, USA", by Pombupba et. al 2019. 
+Phyloseq, ggplot, and ggtree were used for all data visualization purposes. Samples were rarefied based on the lowest sample read count and singletons were removed. Most phyloseq pipelines were adapted from "Insights into dryland biocrust microbiome: geography, soil depth and crust type affect biocrust microbial communities and networks in Mojave Desert, USA", by Pombupba et. al 2019. Be sure to site him if you use it. 
+Certainly! Below is a draft README for the described analyses using `phyloseq`, `ggtree`, and `DESeq` for alpha diversity, beta diversity, taxonomic bar plots, log2fold plots with DEseq, and heatmaps with phylogenies:
+
+## Contents
+
+1. [Alpha Diversity](#alpha-diversity)
+2. [Beta Diversity](#beta-diversity)
+3. [Taxonomic Bar Plots](#taxonomic-bar-plots)
+4. [Log2Fold Plots with DESeq](#log2fold-plots-with-deseq)
+5. [Heatmaps with Phylogenies](#heatmaps-with-phylogenies)
+
+## Alpha Diversity
+
+### Description
+- All samples are rarefied based on the sample with the lowest number of reads. Singletons are then removed.
+- Samples are faceted based on substrate or site.
+- Alpha diversity is calculated and plotted using `phyloseq`.
+
+
+## Beta Diversity
+
+### Description
+- All samples are rarefied based on the sample with the lowest number of reads. Singletons are then removed.
+- Samples are faceted based on substrate or site.
+- Beta diversity based on Bray Curtis Dissimilarity is calculated and plotted using `phyloseq`
+
+## Taxonomic Bar Plots
+
+### Description
+- Taxonomic bar plots are generated to visualize the abundance of taxa at different taxonomic levels.
+- Faceted by fungal class and genus, including Glomeromycetes.
+- ggplot is used to display the plots.
+- Note, the pipeline requires manipulation based on top abundance taxa in your data. You must specify the taxa above 1% relative abundance. 
+
+## Log2Fold Plots with DESeq
+
+### Description
+- Differential abundance analysis is performed using `DESeq`.
+- Log2Fold change plots are generated to visualize differential abundance between conditions, eg before and after surface sterilization. The pipeline was adapted from this blog post: https://joey711.github.io/phyloseq-extensions/DESeq2.html
+
+## Heatmaps with Phylogenies
+
+### Description
+- Heatmaps with phylogenies are generated to visualize taxonomic relationships and abundance patterns.
+- Faceted by fungal class and genus, including Glomeromycetes.
+- Block based phylogenetic classification was used based on clustering with NCBI type species
+
+## Citation
+If you use this analysis pipeline, please cite the relevant packages and methods used, especially "Insights into dryland biocrust microbiome: geography, soil depth and crust type affect biocrust microbial communities and networks in Mojave Desert, USA", by Pombupba et. al 2019
+
+---
+
+
 
