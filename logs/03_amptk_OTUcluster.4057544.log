@@ -1,0 +1,47 @@
+Loading [1mamptk/1.6[22m
+  [94mLoading requirement[0m: usearch/10 mafft/7.505 fasttree/2.1.11
+/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome/results/amptk /bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome
+[01:57:45 PM]: OS: Rocky Linux 8.8, 64 cores, ~ 528 GB RAM. Python: 3.10.0
+[01:57:45 PM]: AMPtk v1.6.0, VSEARCH v2.22.1
+[01:57:45 PM]: Loading FASTQ Records
+-------------------------------------------------------
+Traceback (most recent call last):
+  File "/opt/linux/rocky/8.x/x86_64/pkgs/amptk/1.6/bin/amptk", line 8, in <module>
+    sys.exit(main())
+  File "/bigdata/operations/pkgadmin/opt/linux/centos/8.x/x86_64/pkgs/amptk/1.6/lib/python3.10/site-packages/amptk/amptk.py", line 784, in main
+    mod.main(arguments)
+  File "/bigdata/operations/pkgadmin/opt/linux/centos/8.x/x86_64/pkgs/amptk/1.6/lib/python3.10/site-packages/amptk/OTU_cluster.py", line 87, in main
+    orig_total = amptklib.countfasta(orig_fasta)
+  File "/bigdata/operations/pkgadmin/opt/linux/centos/8.x/x86_64/pkgs/amptk/1.6/lib/python3.10/site-packages/amptk/amptklib.py", line 445, in countfasta
+    with open(input, 'r') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'Mojave2020_KKelly202307_tmp/Mojave2020_KKelly202307.orig.fa'
+[01:57:46 PM]: OS: Rocky Linux 8.8, 64 cores, ~ 528 GB RAM. Python: 3.10.0
+[01:57:46 PM]: AMPtk v1.6.0, VSEARCH v2.22.1
+[01:57:46 PM]: Loading OTU table: Mojave2020_KKelly202307.otu_table.txt
+-------------------------------------------------------
+Traceback (most recent call last):
+  File "/opt/linux/rocky/8.x/x86_64/pkgs/amptk/1.6/bin/amptk", line 8, in <module>
+    sys.exit(main())
+  File "/bigdata/operations/pkgadmin/opt/linux/centos/8.x/x86_64/pkgs/amptk/1.6/lib/python3.10/site-packages/amptk/amptk.py", line 784, in main
+    mod.main(arguments)
+  File "/bigdata/operations/pkgadmin/opt/linux/centos/8.x/x86_64/pkgs/amptk/1.6/lib/python3.10/site-packages/amptk/filter.py", line 84, in main
+    check = os.stat(args.otu_table).st_size
+FileNotFoundError: [Errno 2] No such file or directory: 'Mojave2020_KKelly202307.otu_table.txt'
+[01:57:47 PM]: OS: Rocky Linux 8.8, 64 cores, ~ 528 GB RAM. Python: 3.10.0
+[01:57:47 PM]: AMPtk v1.6.0, VSEARCH v2.22.1
+[01:57:47 PM]: Loading FASTA Records
+-------------------------------------------------------
+Traceback (most recent call last):
+  File "/opt/linux/rocky/8.x/x86_64/pkgs/amptk/1.6/bin/amptk", line 8, in <module>
+    sys.exit(main())
+  File "/bigdata/operations/pkgadmin/opt/linux/centos/8.x/x86_64/pkgs/amptk/1.6/lib/python3.10/site-packages/amptk/amptk.py", line 784, in main
+    mod.main(arguments)
+  File "/bigdata/operations/pkgadmin/opt/linux/centos/8.x/x86_64/pkgs/amptk/1.6/lib/python3.10/site-packages/amptk/assign_taxonomy.py", line 224, in main
+    total = lib.countfasta(args.fasta)
+  File "/bigdata/operations/pkgadmin/opt/linux/centos/8.x/x86_64/pkgs/amptk/1.6/lib/python3.10/site-packages/amptk/amptklib.py", line 445, in countfasta
+    with open(input, 'r') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'Mojave2020_KKelly202307.filtered.otus.fa'
+usage: amptk-funguild.py [-h] -i INPUT [-o OUT] [-d DATABASE] [-u URL]
+amptk-funguild.py: error: unrecognized arguments: --db fungi
+/var/spool/slurmd/job4057544/slurm_script: line 38: Mojave2020_KKelly202307.taxonomy.txt: No such file or directory
+/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome

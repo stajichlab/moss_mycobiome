@@ -1,0 +1,107 @@
+Loading [1mamptk/1.6[22m
+  [94mLoading requirement[0m: usearch/10 mafft/7.505 fasttree/2.1.11
+/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome/results/amptk /bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome
+[02:56:45 PM]: OS: Rocky Linux 8.8, 64 cores, ~ 528 GB RAM. Python: 3.10.0
+[02:56:45 PM]: AMPtk v1.6.0, VSEARCH v2.22.1
+[02:56:47 PM]: R vWARNING: ignoring environment value of R_HOME
+4.2.2; DADA2 v1.26.0
+[02:56:47 PM]: Loading FASTQ Records
+[03:00:31 PM]: 6,972,409 reads (3.0 GB)
+[03:00:31 PM]: Quality Filtering, expected errors < 1.0
+[03:03:26 PM]: 6,056,727 reads passed
+[03:03:26 PM]: Splitting FASTQ file by Sample into individual files
+[03:10:45 PM]: Dropping deltaB1.fastq as fewer than 10 reads
+[03:10:45 PM]: Running DADA2 pipeline on each sample
+[03:36:15 PM]: 12,454 total amplicon sequence variants (ASVs)
+[03:36:15 PM]: 515 denovo chimeras removed
+[03:36:15 PM]: 11,939 valid ASVs
+[03:36:15 PM]: Chimera Filtering (VSEARCH) using ITS DB
+[03:38:27 PM]: 11,403 ASVs passed, 536 ref chimeras removed
+[03:38:27 PM]: Validating ASV orientation
+[03:38:29 PM]: 10,413 ASVs validated (990 dropped)
+[03:38:29 PM]: Mapping reads to DADA2 ASVs
+[03:43:39 PM]: 6,198,110 reads mapped to ASVs (89%)
+[03:43:39 PM]: Clustering ASVs at 97% to generate biological OTUs
+[03:43:41 PM]: 5,024 OTUs generated
+[03:43:42 PM]: Mapping reads to OTUs
+[03:48:30 PM]: 6,073,951 reads mapped to OTUs (87%)
+-------------------------------------------------------
+-------------------------------------------------------
+DADA2 Script has Finished Successfully
+-------------------------------------------------------
+Amplicon sequence variants: Mojave2020_KKelly202307.ASVs.fa
+ASV OTU Table: Mojave2020_KKelly202307.otu_table.txt
+Clustered OTUs: Mojave2020_KKelly202307.cluster.otus.fa
+OTU Table: Mojave2020_KKelly202307.cluster.otu_table.txt
+ASVs 2 OTUs: Mojave2020_KKelly202307.ASVs2clusters.txt
+-------------------------------------------------------
+
+Example of next cmd: amptk filter -i Mojave2020_KKelly202307.cluster.otu_table.txt -f Mojave2020_KKelly202307.cluster.otus.fa -b <mock barcode>
+
+[03:48:33 PM]: OS: Rocky Linux 8.8, 64 cores, ~ 528 GB RAM. Python: 3.10.0
+[03:48:34 PM]: AMPtk v1.6.0, VSEARCH v2.22.1
+[03:48:34 PM]: Loading OTU table: Mojave2020_KKelly202307.otu_table.txt
+[03:48:34 PM]: OTU table contains 90 samples, 10,349 OTUs, and 6,198,110 reads counts
+[03:48:34 PM]: Sorting OTU table naturally
+/bigdata/operations/pkgadmin/opt/linux/centos/8.x/x86_64/pkgs/amptk/1.6/lib/python3.10/site-packages/amptk/filter.py:300: FutureWarning: In a future version of pandas all arguments of DataFrame.any and Series.any will be keyword-only.
+  filt2 = filtered.loc[(filtered != 0).any(1)]
+[03:48:34 PM]: Removing 17 OTUs according to --min_reads_otu 2
+[03:48:37 PM]: Normalizing OTU table to number of reads per sample
+[03:48:37 PM]: Overwriting auto detect index-bleed, setting to 0.500000%
+[03:48:53 PM]: Filtered OTU table contains 90 samples, 10,332 OTUs, and 6,166,375 read counts
+[03:48:53 PM]: Finding valid OTUs
+-------------------------------------------------------
+-------------------------------------------------------
+OTU Table filtering finished
+-------------------------------------------------------
+OTU Table Stats:      Mojave2020_KKelly202307.stats.txt
+Sorted OTU table:     Mojave2020_KKelly202307.sorted.txt
+Normalized/filter:    Mojave2020_KKelly202307.normalized.txt
+Final Binary table:   Mojave2020_KKelly202307.final.binary.txt
+Final OTU table:      Mojave2020_KKelly202307.final.txt
+Filtered OTUs:        Mojave2020_KKelly202307.filtered.otus.fa
+-------------------------------------------------------
+
+Example of next cmd: amptk taxonomy -f Mojave2020_KKelly202307.filtered.otus.fa -i Mojave2020_KKelly202307.final.txt -m mapping_file.txt -d ITS2
+
+[03:48:55 PM]: OS: Rocky Linux 8.8, 64 cores, ~ 528 GB RAM. Python: 3.10.0
+[03:48:55 PM]: AMPtk v1.6.0, VSEARCH v2.22.1
+[03:48:55 PM]: Loading FASTA Records
+[03:48:55 PM]: 10,413 OTUs
+[03:48:55 PM]: Global alignment OTUs with usearch_global (VSEARCH) against ITS.udb
+[03:50:44 PM]: Classifying OTUs with SINTAX (VSEARCH)
+[03:51:16 PM]: Appending taxonomy to OTU table and OTUs
+[03:51:17 PM]: Generating phylogenetic tree (MAFFT/FastTree)
+[04:26:22 PM]: Taxonomy finished: Mojave2020_KKelly202307.ASVs.taxonomy.txt
+[04:26:22 PM]: Classic OTU table with taxonomy: Mojave2020_KKelly202307.ASVs.otu_table.taxonomy.txt
+[04:26:40 PM]: BIOM OTU table created: Mojave2020_KKelly202307.ASVs.biom
+[04:26:40 PM]: OTUs with taxonomy: Mojave2020_KKelly202307.ASVs.otus.taxonomy.fa
+[04:26:40 PM]: OTU phylogeny: Mojave2020_KKelly202307.ASVs.tree.phy
+-------------------------------------------------------
+-------------------------------------------------------
+-------------------------------------------------------
+[04:26:41 PM]: OS: Rocky Linux 8.8, 64 cores, ~ 528 GB RAM. Python: 3.10.0
+[04:26:41 PM]: Downloading/parsing FUNGuild database from: https://mycoportal.org/fdex/services/api/db_return.php?dbReturn=Yes&pp=1
+[04:26:44 PM]: Assigning functional guilds completed
+[04:26:44 PM]: FUNGuild databases consists of 15,865 records, 21 trophic-levels, 577 guilds
+[04:26:44 PM]: Trophic-level assignment statistics for 10,332 OTUS
+ Pathotroph		8
+ Pathotroph-Pathotroph-Saprotroph	7
+ Pathotroph-Saprotroph	6
+ Pathotroph-Saprotroph-Symbiotroph	36
+ Saprotroph		18
+ Saprotroph-Pathotroph-Saprotroph	7
+ Saprotroph-Symbiotroph	1
+ Symbiotroph		8
+Pathotroph		273
+Pathotroph-Saprotroph	431
+Pathotroph-Saprotroph-Symbiotroph	852
+Pathotroph-Symbiotroph	149
+Saportroph-Saprotroph	13
+Saprotroph		639
+Saprotroph-Symbiotroph	129
+Symbiotroph		445
+Unclassified		7310
+-------------------------------------------------------
+/var/spool/slurmd/job4057571/slurm_script: line 38: Mojave2020_KKelly202307.taxonomy.txt: No such file or directory
+/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome

@@ -1,0 +1,122 @@
+Loading [1mamptk/1.6[22m
+  [94mLoading requirement[0m: usearch/10 mafft/7.505 fasttree/2.1.11
+/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome/results/amptk /bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome
+[01:52:52 PM]: OS: Rocky Linux 8.8, 64 cores, ~ 528 GB RAM. Python: 3.10.0
+[01:52:52 PM]: AMPtk v1.6.0, VSEARCH v2.22.1
+[01:52:52 PM]: Gzipped files detected, uncompressing
+[01:53:42 PM]: ITS1-F fwd primer found in AMPtk primer db, setting to: CTTGGTCATTTAGAGGAAGTAA
+[01:53:42 PM]: ITS2 rev primer found in AMPtk primer db, setting to: GCTGCGTTCTTCATCGATGC
+[01:53:42 PM]: Demuxing data using 64 cpus
+[01:53:42 PM]: Dropping reads less than 100 bp and setting lossless trimming to 250 bp.
+[01:53:42 PM]: Strip Primers and Merge PE reads. FwdPrimer: CTTGGTCATTTAGAGGAAGTAA RevPrimer: GCTGCGTTCTTCATCGATGC
+-------------------------------------------------------
+     Progress: 0.00%      Progress: 7.37%      Progress: 9.47%      Progress: 10.53%      Progress: 11.58%      Progress: 12.63%      Progress: 14.74%      Progress: 14.74%      Progress: 14.74%      Progress: 14.74%      Progress: 16.84%      Progress: 17.89%      Progress: 18.95%      Progress: 20.00%      Progress: 21.05%      Progress: 23.16%      Progress: 24.21%      Progress: 26.32%      Progress: 30.53%      Progress: 33.68%      Progress: 34.74%      Progress: 38.95%      Progress: 45.26%      Progress: 50.53%      Progress: 50.53%      Progress: 52.63%      Progress: 58.95%      Progress: 61.05%      Progress: 64.21%      Progress: 67.37%      Progress: 69.47%      Progress: 70.53%      Progress: 75.79%      Progress: 77.89%      Progress: 80.00%      Progress: 80.00%      Progress: 80.00%      Progress: 81.05%      Progress: 83.16%      Progress: 84.21%      Progress: 84.21%      Progress: 87.37%      Progress: 87.37%      Progress: 91.58%      Progress: 93.68%      Progress: 93.68%      Progress: 95.79%      Progress: 95.79%      Progress: 95.79%      Progress: 96.84%      Progress: 96.84%      Progress: 96.84%      Progress: 96.84%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 97.89%      Progress: 98.95% error: max() arg is an empty sequence run(*(('/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome/input/OmegaD2_S30_R1_001.fastq', '/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome/input/OmegaD2_S30_R2_001.fastq'),), **{'args': Namespace(input='/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome/input', out='Mojave2020_KKelly202307', mapping_file=None, reads='paired', read_length=None, F_primer='ITS1-F', R_primer='ITS2', primer='off', primer_mismatch=2, barcode_mismatch=1, rescue_forward='on', min_len=100, merge_method='vsearch', trim_len=250, cpus=64, full_length=False, pad='off', usearch='usearch10', sra=False, cleanup=False)})
+error: max() arg is an empty sequence run(*(('/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome/input/Pos-Pool4itive_ctrl_S22_R1_001.fastq', '/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome/input/Pos-Pool4itive_ctrl_S22_R2_001.fastq'),), **{'args': Namespace(input='/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome/input', out='Mojave2020_KKelly202307', mapping_file=None, reads='paired', read_length=None, F_primer='ITS1-F', R_primer='ITS2', primer='off', primer_mismatch=2, barcode_mismatch=1, rescue_forward='on', min_len=100, merge_method='vsearch', trim_len=250, cpus=64, full_length=False, pad='off', usearch='usearch10', sra=False, cleanup=False)})
+error: max() arg is an empty sequence run(*(('/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome/input/deltaA1_S25_R1_001.fastq', '/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome/input/deltaA1_S25_R2_001.fastq'),), **{'args': Namespace(input='/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome/input', out='Mojave2020_KKelly202307', mapping_file=None, reads='paired', read_length=None, F_primer='ITS1-F', R_primer='ITS2', primer='off', primer_mismatch=2, barcode_mismatch=1, rescue_forward='on', min_len=100, merge_method='vsearch', trim_len=250, cpus=64, full_length=False, pad='off', usearch='usearch10', sra=False, cleanup=False)})
+[01:54:53 PM]: Concatenating Demuxed Files
+[01:55:00 PM]: 6,972,819 total reads
+[01:55:00 PM]: 4,775,704 Fwd Primer found, 5,276,337 Rev Primer found
+[01:55:00 PM]: 85 discarded Primer incompatibility
+[01:55:00 PM]: 325 discarded too short (< 100 bp)
+[01:55:00 PM]: 6,972,409 valid output reads
+[01:55:08 PM]: Found 91 barcoded samples
+                        Sample:  Count
+                       OmegaC1:  330842
+                       deltaA2:  322996
+                       AlphaD3:  224617
+                       AlphaA2:  206123
+                       AlphaD2:  188572
+                       GammaA2:  178747
+                       OmegaD1:  166933
+                  AlphaB4.TR.1:  165848
+                       AlphaC3:  160893
+                        BetaD3:  160294
+                        BetaA2:  160242
+                       OmegaB2:  158207
+                        BetaD1:  152668
+                        BetaD2:  152532
+                       deltaD3:  152164
+                        BetaB3:  130770
+                         phiD1:  120122
+                       deltaB3:  114518
+                  AlphaB3.TR.2:  112761
+                       OmegaC3:  107856
+                  GammaB4.TR.2:  104086
+                       AlphaD1:  102151
+                         phiA2:  98319
+                       GammaA3:  95031
+                       OmegaA2:  93910
+                   BetaC2.TR.2:  93466
+                         phiD3:  92617
+                        BetaA3:  92369
+                       deltaD2:  89562
+                       OmegaB3:  83014
+                       deltaC2:  81615
+                       deltaD1:  80735
+                       OmegaB1:  79085
+                       DeltaA1:  77435
+                       OmegaA3:  77397
+                GammaC2.TR.2.2:  76112
+                   BetaC1.TR.2:  74817
+                AlphaB5.TR.2.2:  74615
+                  GammaA5.TR.2:  73822
+                AlphaB5.TR.2.1:  72807
+                         phiD2:  69954
+                  GammaB1.TR.1:  66782
+                  AlphaD2.TR.1:  64568
+                  AlphaD2.TR.2:  64307
+                   BetaA3.TR.2:  63119
+                         phiB1:  62519
+                   BetaB1.TR.1:  59980
+                  GammaB5.TR.2:  59125
+                       deltaB2:  57127
+                       deltaC1:  56816
+                       AlphaA3:  56389
+                       OmegaD3:  55604
+                   BetaD1.TR.1:  55158
+                         phiB2:  53606
+                  AlphaC2.TR.2:  53581
+                   BetaD2.TR.1:  49389
+                  GammaD4.TR.2:  49066
+                  AlphaA1.TR.1:  48614
+                  AlphaC4.TR.2:  48560
+                       deltaC3:  46674
+                       GammaD1:  46075
+                       OmegaC2:  45450
+                  AlphaB1.TR.2:  44750
+                       OmegaA1:  42498
+                   BetaB2.TR.2:  41453
+                         phiA3:  39395
+                         phiB3:  36680
+                  GammaD5.TR.2:  36393
+                  AlphaD3.TR.2:  34988
+                         phiC3:  33596
+                       GammaC2:  29385
+                       DeltaA3:  28851
+                         phiC2:  28810
+                         phiA1:  24533
+                         phiC1:  17893
+                       GammaC3:  16571
+                        BetaC3:  16297
+               negative4-20-24:  14174
+                  manzanita-YL:  13225
+                       OmegaD2:  12514
+                  manzinita-OL:  10018
+                  GammaC3.TR.1:  9903
+                GammaC2.TR.2.1:  9471
+               manzinita-OL-SS:  8072
+                      TAPWATER:  3566
+               manzinita-YL-SS:  2527
+                      NEGATIVE:  1772
+                       deltaA3:  1015
+                Neg-Pool4ative:  889
+               positive4-20-24:  36
+                       deltaB1:  1
+[01:55:13 PM]: Output file:  Mojave2020_KKelly202307.demux.fq.gz (312.1 MB)
+[01:55:13 PM]: Mapping file: Mojave2020_KKelly202307.mapping_file.txt
+-------------------------------------------------------
+-------------------------------------------------------
+
+Example of next cmd: amptk cluster -i Mojave2020_KKelly202307.demux.fq.gz -o out
+
+/bigdata/stajichlab/shared/projects/BioCrusts/MossCrust/moss_mycobiome
