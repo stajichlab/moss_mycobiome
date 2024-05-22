@@ -1,7 +1,7 @@
 ---
 title: "Mojave_Div_ITS_phyloseq"
-author: "Nat Pombubpa"
-date: "Updated on December 11, 2019"
+author: "Nat Pombubpa and Kian Kelly"
+date: "Updated on 5/24"
 output: html_document
 ---
 
@@ -49,7 +49,7 @@ library(MoMAColors)
 3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
 
 ```{r}
-meta = read.table("metadata_update2.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
 ```
 
 If need to keep or remove some samples
@@ -198,17 +198,17 @@ dev.off()
 
 ```{r}
 
-site_venn <- ps_venn(physeq.prune.rarefy, "Site", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
+#site_venn <- ps_venn(physeq.prune.rarefy, "Site", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
 
-site_venn
+#site_venn
 
 ```
 
 ```{r}
 
-png("./figures/site_venn.png", units="in", width = 5.8, height = 5.8, res = 300 )
-site_venn
-dev.off()
+#png("./figures/site_venn.png", units="in", width = 5.8, height = 5.8, res = 300 )
+#site_venn
+#dev.off()
 
 ```
 
@@ -263,7 +263,7 @@ dev.off()
 
 
 ```{r}
-Substrates <- c("SMC.ster", "SMC")
+Substrates <- c("Surface Sterile", "Moss Crust")
 
 # Subset the samples based on the crust types
 physeq.prune.rarefy.Substrate <- subset_samples(physeq.prune.rarefy, Substrate %in% Substrates)
