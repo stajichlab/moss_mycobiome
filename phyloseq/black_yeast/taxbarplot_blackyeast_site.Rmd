@@ -5,7 +5,7 @@ date: "Updated on December 11, 2019"
 output: html_document
 ---
 
-#Fungal taxonomic barplot by Substrate
+#Fungal taxonomic barplot by Site
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -173,9 +173,13 @@ physeq.prune.rarefy = subset_taxa(physeq.prune.rarefy, Order=="Chaetothyriales" 
 physeq.prune.rarefy
 ```
 
+```{r}
+physeq.prune.rarefy.SF = subset_samples(physeq.prune.rarefy, Layer=="Surface")
+```
+
 ##Make taxonomy table into a matrix and relabel NA as unknown
 ```{r}
-tax.fun <- as(tax_table(physeq.prune.rarefy),"matrix")
+tax.fun <- as(tax_table(physeq.prune.rarefy.SF),"matrix")
 head(tax.fun)
 tax.fun[is.na(tax.fun)] <- "Unknown"
 head(tax.fun)
@@ -184,7 +188,7 @@ head(tax.fun)
 ###Convert tax table back to phyloseq object and generate phyloseq object with new tax table
 ```{r}
 TAX.fun <- tax_table(tax.fun)
-fun.3 <- phyloseq(sample_data(physeq.prune.rarefy),otu_table(physeq.prune.rarefy),TAX.fun)
+fun.3 <- phyloseq(sample_data(physeq.prune.rarefy.SF),otu_table(physeq.prune.rarefy.SF),TAX.fun)
 fun.3
 ```
 
@@ -201,8 +205,8 @@ tax_table(glom.fun)
 ##Samples can also be merged together by a variable in the mapping file
 
 ```{r}
-fun.abund <- merge_samples(glom.fun, "Substrate")
-sample_data(fun.abund)$Substrate <- factor(sample_names(fun.abund))
+fun.abund <- merge_samples(glom.fun, "Site")
+sample_data(fun.abund)$Site <- factor(sample_names(fun.abund))
 fun.abund = transform_sample_counts(fun.abund, function(x) x / sum(x))
 fun.abund
 ```
@@ -236,11 +240,10 @@ unique((data_glom.fun$Genus))
 Create levels of phyla represented in barplot. Levels appear on the barplot in the order they are listed
 
 ```{r}
-data_glom.fun$Genus <- factor(data_glom.fun$Genus, levels = c("Alternaria", "Knufia", "Phoma", "Unknown", "Cladosporium", "Herpotrichia", "Cladophialophora", "Epicoccum", "Exophiala", "Pyrenophora", "Neodevriesia", "Pithomyces", "Didymella", "<1% abund."))
+data_glom.fun$Genus <- factor(data_glom.fun$Genus, levels = c("Knufia", "Alternaria", "Phoma", "Unknown", "Cladophialophora", "Cladosporium", "Herpotrichia", "Pyrenophora", "Exophiala", "Epicoccum", "Phaeosphaeria", "Tumularia","Didymella","Neodevriesia", "<1% abund."))
 ```
 
 ###Create barplot of phyla - use facet_grid to separate samples by a variable ie in mapping file. Choose colors for plot in scale_fill_manual. color names can be found at http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf *amount of colors must match amount of level in phyla column
-
 ```{r}
 data_glom.fun$Substrate = factor(data_glom.fun$Substrate, levels = c("Moss Crust", "Surface Sterile", "Subsurface", "Dirt"))
 ```
@@ -260,19 +263,23 @@ Dali <- c(Dali, OKeeffe)
 Dali
 ```
 
+```{r}
+data_glom.fun$Site = factor(data_glom.fun$Site, levels = c("TP", "TP2", "CIMA", "GMT", "ODLO", "AB"))
+```
+
 ```{r fig.height=5, fig.width=8, fig.align="center"}
 # The palette with black:
-#cbbPalette <- c("#009E73","#999999", "#E69F00", "#56B4E9", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "midnightblue", "lightgreen", #"aquamarine4","lavenderblush2","brown", "snow3")
-taxcom_layer_pl = ggplot(data = data_glom.fun, mapping = aes_string(x = "Substrate" ,y = "Abundance", fill = "Genus" )) + 
+cbbPalette <- c("#009E73","#999999", "#E69F00", "#56B4E9", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "midnightblue", "lightgreen", "aquamarine4","lavenderblush2","brown", "snow3")
+taxcom_layer_pl = ggplot(data = data_glom.fun, mapping = aes_string(x = "Site" ,y = "Abundance", fill = "Genus" )) + 
   geom_bar(stat="identity", position="fill") + 
-  ggtitle("Black Yeast Taxonomic Composition (Genus level) by Crust type")+
+  ggtitle("Black Yeast Taxonomic Composition (Genus level) by Site")+
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_fill_manual(values = Dali)
 print(taxcom_layer_pl)
 ```
 
 ```{r}
-png("./Figures/Black_yeast_Taxonomic_Composition_(Genus_level)_by_Substrate.png", units="in", width = 5.8, height = 5.8, res = 300 )
+png("./Figures/Black_yeast_Taxonomic_Composition_(Genus_level)_by_Site_reorder_not_Rainbow.png", units="in", width = 5.8, height = 5.8, res = 300 )
 taxcom_layer_pl
 dev.off()
 ```
