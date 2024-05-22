@@ -49,7 +49,7 @@ library(MoMAColors)
 3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
 
 ```{r}
-meta = read.table("Metadata_KHK2.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
 ```
 
 If need to keep or remove some samples
@@ -190,32 +190,32 @@ if (!file.exists("figures_glom")) {
   dir.create("figures_glom")
 }
 
-crust_type_venn <- ps_venn(physeq.prune.rarefy, "Crust_type", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
+Substrate_venn <- ps_venn(physeq.prune.rarefy, "Substrate", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
 
-crust_type_venn
+Substrate_venn
 ```
 
 ```{r}
 
-png("./figures_glom/Crust_type_venn.png", units="in", width = 5.8, height = 5.8, res = 300 )
-crust_type_venn
+png("./figures_glom/Substrate_venn.png", units="in", width = 5.8, height = 5.8, res = 300 )
+Substrate_venn
 dev.off()
 
 ```
 
 ```{r}
 
-site_venn <- ps_venn(physeq.prune.rarefy, "Site", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
+#site_venn <- ps_venn(physeq.prune.rarefy, "Site", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = #"black", fill = c(values = Dali), relative = TRUE)
 
-site_venn
+#site_venn
 
 ```
 
 ```{r}
 
-png("./figures_glom/site_venn.png", units="in", width = 5.8, height = 5.8, res = 300 )
-site_venn
-dev.off()
+#png("./figures_glom/site_venn.png", units="in", width = 5.8, height = 5.8, res = 300 )
+#site_venn
+#dev.off()
 
 ```
 
@@ -270,12 +270,12 @@ dev.off()
 
 
 ```{r}
-crust_types <- c("SMC.ster", "SMC")
+Substrates <- c("Surface Sterile", "Moss Crust")
 
 # Subset the samples based on the crust types
-physeq.prune.rarefy.crust_type <- subset_samples(physeq.prune.rarefy, Crust_type %in% crust_types)
+physeq.prune.rarefy.Substrate <- subset_samples(physeq.prune.rarefy, Substrate %in% Substrates)
 
-venn_moss <- ps_venn(physeq.prune.rarefy.crust_type, "Crust_type", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
+venn_moss <- ps_venn(physeq.prune.rarefy.Substrate, "Substrate", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
 
 venn_moss
 ```
