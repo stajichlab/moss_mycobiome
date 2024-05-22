@@ -1,7 +1,7 @@
 ---
 title: "Mojave_Div_ITS_phyloseq"
-author: "Nat Pombubpa"
-date: "Updated on December 11, 2019"
+author: "Kian Kelly and Nat Pombupba"
+date: "Updated on 5/24"
 output: html_document
 ---
 
@@ -47,7 +47,7 @@ library(MoMAColors)
 3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
 
 ```{r}
-meta = read.table("Metadata_KHK2.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
 ```
 
 If need to keep or remove some samples
@@ -175,12 +175,12 @@ physeq.prune.rarefy.Glomeromycetes
 ```
 
 ```{r}
-p1 <- plot_tree(physeq.prune.rarefy.Glomeromycetes, color="Crust_type", shape="Site", label.tips="Genus", size="abundance", plot.margin=0.3)
+p1 <- plot_tree(physeq.prune.rarefy.Glomeromycetes, color="Substrate", shape="Site", label.tips="Genus", size="abundance", plot.margin=0.3)
 p1
 ```
 
 ```{r}
-p1 <- plot_tree(physeq.prune.rarefy.Glomeromycetes, color="Crust_type", shape="Site", label.tips="Species", size="abundance", plot.margin=0.3)
+p1 <- plot_tree(physeq.prune.rarefy.Glomeromycetes, color="Substrate", shape="Site", label.tips="Species", size="abundance", plot.margin=0.3)
 p1
 ```
 
@@ -251,8 +251,8 @@ object
 ```{r}
 
 # Plot the modified tree with species names as tip labels
-p3 <- ggtree(object, layout="rectangular") +
-  geom_tiplab(size=1, color="black")
+p3 <- ggtree(object, layout="rectangular") #+
+  #geom_tiplab(size=1, color="white")
 
 
 p3
@@ -285,7 +285,7 @@ rownames(otu_table) <- new_tip_labels
 sample_data <- as.data.frame(sample_data(physeq.prune.rarefy.Glomeromycetes))
 
 # Extract the variables you want to use as column names (e.g., soil type, site)
-column_names <- paste(sample_data$Crust_type, sample_data$Site, sep = " ")
+column_names <- paste(sample_data$Substrate, sample_data$Site, sep = " ")
 
 #log_otu_table <- log10(otu_table + 1)  # Adding 1 to avoid log(0)
 
@@ -309,17 +309,17 @@ log_df_otu <- log10(df_otu + 1)
 ```{r}
 
 
-p_heatmap <- gheatmap(p3, log_df_otu, width=4, offset=0.25, 
+p_heatmap <- gheatmap(p3, log_df_otu, width=.75, offset=0.1, 
                       legend_title="Relative Abundance", colnames_position="bottom", 
                       colnames_angle=45, colnames_offset_y=0, hjust=1, font.size=1.25) +
   scale_fill_gradientn("Relative abundance", colours = palette_white_to_red) +
-  scale_y_continuous(limits=c(-2, 145)) + theme_tree(legend.position="right")
+  scale_y_continuous(limits=c(-10, 155)) + theme_tree(legend.position="right")
 plot(p_heatmap)
 ```
 
 ```{r}
 
 # Save the heatmap as a file
-ggsave("glomeromycete.png", plot = p_heatmap, width = 8, height = 6)
+ggsave("glomeromycete.png", plot = p_heatmap, width = 8, height = 5)
 
 ```
