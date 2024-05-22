@@ -5,7 +5,7 @@ date: "Updated on December 11, 2019"
 output: html_document
 ---
 
-#Fungal taxonomic barplot by Crust_type
+#Fungal taxonomic barplot by Substrate
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -41,7 +41,7 @@ library(multcompView)
 3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
 
 ```{r}
-meta = read.table("metadata_khk.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
 ```
 
 If need to keep or remove some samples
@@ -99,8 +99,8 @@ TAX = tax_table(taxmat)
 Phylogenetic tree can also be include for further phylogenetic analysis.
 
 ```{r warning=FALSE}
-treefile = "Mojave2020_KKelly202307.ASVs.tree.phy"
-tree = read.tree(treefile)
+#treefile = "Mojave2020_KKelly202307.ASVs.tree.phy"
+#tree = read.tree(treefile)
 ```
 
 ###STEP8: Construct Phyloseq object
@@ -173,13 +173,9 @@ physeq.prune.rarefy = subset_taxa(physeq.prune.rarefy, Order=="Chaetothyriales" 
 physeq.prune.rarefy
 ```
 
-```{r}
-physeq.prune.rarefy.SF = subset_samples(physeq.prune.rarefy, Layer=="Surface")
-```
-
 ##Make taxonomy table into a matrix and relabel NA as unknown
 ```{r}
-tax.fun <- as(tax_table(physeq.prune.rarefy.SF),"matrix")
+tax.fun <- as(tax_table(physeq.prune.rarefy),"matrix")
 head(tax.fun)
 tax.fun[is.na(tax.fun)] <- "Unknown"
 head(tax.fun)
@@ -188,7 +184,7 @@ head(tax.fun)
 ###Convert tax table back to phyloseq object and generate phyloseq object with new tax table
 ```{r}
 TAX.fun <- tax_table(tax.fun)
-fun.3 <- phyloseq(sample_data(physeq.prune.rarefy.SF),otu_table(physeq.prune.rarefy.SF),TAX.fun)
+fun.3 <- phyloseq(sample_data(physeq.prune.rarefy),otu_table(physeq.prune.rarefy),TAX.fun)
 fun.3
 ```
 
@@ -205,8 +201,8 @@ tax_table(glom.fun)
 ##Samples can also be merged together by a variable in the mapping file
 
 ```{r}
-fun.abund <- merge_samples(glom.fun, "Crust_type")
-sample_data(fun.abund)$Crust_type <- factor(sample_names(fun.abund))
+fun.abund <- merge_samples(glom.fun, "Substrate")
+sample_data(fun.abund)$Substrate <- factor(sample_names(fun.abund))
 fun.abund = transform_sample_counts(fun.abund, function(x) x / sum(x))
 fun.abund
 ```
@@ -240,28 +236,43 @@ unique((data_glom.fun$Genus))
 Create levels of phyla represented in barplot. Levels appear on the barplot in the order they are listed
 
 ```{r}
-data_glom.fun$Genus <- factor(data_glom.fun$Genus, levels = c("Preussia", "Unknown", "Coniosporium", "Cladophialophora", "Neophaeococcomyces", "Leptosphaerulina", "Alternaria", "Macroventuria", "Petrakia", "Corynespora", "<1% abund."))
+data_glom.fun$Genus <- factor(data_glom.fun$Genus, levels = c("Alternaria", "Knufia", "Phoma", "Unknown", "Cladosporium", "Herpotrichia", "Cladophialophora", "Epicoccum", "Exophiala", "Pyrenophora", "Neodevriesia", "Pithomyces", "Didymella", "<1% abund."))
 ```
 
 ###Create barplot of phyla - use facet_grid to separate samples by a variable ie in mapping file. Choose colors for plot in scale_fill_manual. color names can be found at http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf *amount of colors must match amount of level in phyla column
 
 ```{r}
-data_glom.fun$Crust_type = factor(data_glom.fun$Crust_type, levels = c("SMC", "SMC.ster", "SMC.Sub", "Dirt"))
+data_glom.fun$Substrate = factor(data_glom.fun$Substrate, levels = c("Moss Crust", "Surface Sterile", "Subsurface", "Dirt"))
+```
+```{r fig.height=5, fig.width=8, fig.align="center"}
+# The palette with black:
+OKeeffe <- c("#796B58", "#1C1A18", "#95D1E6","#D2BAA4", "#96B5BC", "azure2", "azure3")
+```
+
+```{r}
+# Get the Dali palette
+Dali <- moma.colors("Dali")
+
+# Add one more color to the palette
+Dali <- c(Dali, OKeeffe)
+
+# Check the updated palette
+Dali
 ```
 
 ```{r fig.height=5, fig.width=8, fig.align="center"}
 # The palette with black:
-cbbPalette <- c("#009E73","#999999", "#E69F00", "#56B4E9", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "midnightblue", "lightgreen", "aquamarine4","lavenderblush2","brown", "snow3")
-taxcom_layer_pl = ggplot(data = data_glom.fun, mapping = aes_string(x = "Crust_type" ,y = "Abundance", fill = "Genus" )) + 
+#cbbPalette <- c("#009E73","#999999", "#E69F00", "#56B4E9", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "midnightblue", "lightgreen", #"aquamarine4","lavenderblush2","brown", "snow3")
+taxcom_layer_pl = ggplot(data = data_glom.fun, mapping = aes_string(x = "Substrate" ,y = "Abundance", fill = "Genus" )) + 
   geom_bar(stat="identity", position="fill") + 
   ggtitle("Black Yeast Taxonomic Composition (Genus level) by Crust type")+
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_fill_manual(values = cbbPalette)
+  theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_fill_manual(values = Dali)
 print(taxcom_layer_pl)
 ```
 
 ```{r}
-png("./Figures/Black_yeast_Taxonomic_Composition_(Genus_level)_by_Crust_type_reorder_not_Rainbow.png", units="in", width = 5.8, height = 5.8, res = 300 )
+png("./Figures/Black_yeast_Taxonomic_Composition_(Genus_level)_by_Substrate.png", units="in", width = 5.8, height = 5.8, res = 300 )
 taxcom_layer_pl
 dev.off()
 ```
