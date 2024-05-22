@@ -43,7 +43,7 @@ library(MoMAColors)
 3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
 
 ```{r}
-meta = read.table("Metadata_KHK2.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
 ```
 
 If need to keep or remove some samples
@@ -234,7 +234,7 @@ unique((data_glom.fun$Class))
 Create levels of phyla represented in barplot. Levels appear on the barplot in the order they are listed
 
 ```{r}
-data_glom.fun$Class <- factor(data_glom.fun$Class, levels = c("Agaricomycetes", "Dothideomycetes", "Eurotiomycetes", "Unknown", "Microbotryomycetes", "Pezizomycetes","Sordariomycetes", "Tremellomycetes", "Mortierellomycetes", "Lecanoromycetes","<1% abund."))
+data_glom.fun$Class <- factor(data_glom.fun$Class, levels = c("Agaricomycetes", "Dothideomycetes", "Pezizomycetes", "Unknown", "Microbotryomycetes", "Eurotiomycetes","Sordariomycetes", "Saccharomycetes", "Rhizophlyctidomycetes", "Tremellomycetes","Glomeromycetes","Lecanoromycetes","Leotiomycetes","Basidiobolomycetes","<1% abund."))
 ```
 
 ###Create barplot of phyla - use facet_grid to separate samples by a variable ie in mapping file. Choose colors for plot in scale_fill_manual. color names can be found at http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf *amount of colors must match amount of level in phyla column
@@ -245,14 +245,20 @@ data_glom.fun$Climate = factor(data_glom.fun$Climate, levels = c("Mojave_Desert"
 
 ```{r fig.height=5, fig.width=8, fig.align="center"}
 # The palette with black:
-#cbbPalette <- c("#009E73","#999999", "#E69F00", "#56B4E9", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "midnightblue", "lightgreen", "aquamarine4","lavenderblush2","brown", "snow3")
+OKeeffe <- c("#796B58", "#1C1A18", "#95D1E6","#D2BAA4", "#96B5BC", "azure2", "azure3")
+```
 
+```{r}
 # Get the Dali palette
 Dali <- moma.colors("Dali")
 
 # Add one more color to the palette
-new_color <- "black"  # Example color, you can change it to any color code you like
-Dali <- c(Dali, new_color)
+Dali <- c(Dali, OKeeffe)
+
+# Check the updated palette
+Dali
+```
+```{r fig.height=5, fig.width=8, fig.align="center"}
 
 taxcom_layer_pl = ggplot(data = data_glom.fun, mapping = aes_string(x = "Climate" ,y = "Abundance", fill = "Class" )) + 
   geom_bar(stat="identity", position="fill") + 
