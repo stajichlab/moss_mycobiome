@@ -251,8 +251,7 @@ object
 ```{r}
 
 # Plot the modified tree with species names as tip labels
-p3 <- ggtree(object, layout="rectangular") #+
-  #geom_tiplab(size=1, color="white")
+p3 <- ggtree(object, layout="rectangular") + geom_tiplab(size = .8, align = TRUE, linesize = .25, offset = 1, linetype = 3, color = "grey")
 
 
 p3
@@ -313,8 +312,13 @@ p_heatmap <- gheatmap(p3, log_df_otu, width=.75, offset=0.1,
                       legend_title="Relative Abundance", colnames_position="bottom", 
                       colnames_angle=45, colnames_offset_y=0, hjust=1, font.size=1.25) +
   scale_fill_gradientn("Relative abundance", colours = palette_white_to_red) +
-  scale_y_continuous(limits=c(-10, 155)) + theme_tree(legend.position="right")
+  scale_y_continuous(limits=c(-10, 155)) + theme_tree(legend.position="right") #+ geom_tiplab(size = .8, align = TRUE, #linesize = .25, offset = 1, linetype = 0, color = "grey")
 plot(p_heatmap)
+```
+```{r}
+
+p_heatmap #+ geom_tiplab(size = .8, align = TRUE, linesize = .25, offset = 1, linetype = 1, color = "grey")
+
 ```
 
 ```{r}
