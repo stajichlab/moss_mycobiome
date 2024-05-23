@@ -251,12 +251,34 @@ object
 ```{r}
 
 # Plot the modified tree with species names as tip labels
-p3 <- ggtree(object, layout="rectangular") + geom_tiplab(size = .8, align = TRUE, linesize = .25, offset = 1, linetype = 3, color = "grey")
+clades <- data.frame(node=c(182, 277, 158), Taxonomy=c("Rhizophagus", "Glomus", "Funelliformis"))
 
+
+pgroup <- groupClade(object, c(182, 277, 158))
+
+p3 <- ggtree(pgroup, layout="rectangular", aes(color=group)) + 
+  scale_color_manual(values=c("black", "firebrick", "steelblue","pink")) + geom_tiplab(size = .8, align = TRUE, linesize = .25, offset = 1, linetype = 3, color = "grey") 
+
+#plot a test tree to find nodes for labeling
+ptest <- ggtree(object, layout="rectangular",size=1,aes(color=as.numeric(label))) +
+  scale_color_gradient("Bootstrap", low = "green", high = "black", limits=c(0,1)) + 
+  geom_text2(aes(subset=!isTip, 
+label=node)) +
+  geom_tiplab(size=2, color="black") + theme(legend.position = "bottom")
 
 p3
+ptest
 
 ```
+
+
+```{r}
+
+# Save the heatmap as a file
+ggsave("glomeromycete_test.png", plot = ptest, width = 8, height = 5)
+#182, 277, 158 are nodes to label
+```
+
 
 ```{r}
 
