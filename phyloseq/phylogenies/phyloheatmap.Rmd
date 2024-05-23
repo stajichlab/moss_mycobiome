@@ -249,18 +249,25 @@ object
 ```
 
 ```{r}
-
+OKeeffe <- c("#796B58", "#1C1A18", "#D2BAA4", "#95D1E6", "#96B5BC","#BB8677","#DCD0CB", "#1D633F")
+pal <- c("red3","yellow2", "tan", "black")
 # Plot the modified tree with species names as tip labels
 clades <- data.frame(node=c(182, 277, 158), Taxonomy=c("Rhizophagus", "Glomus", "Funelliformis"))
 
 
-pgroup <- groupClade(object, c(182, 277, 158))
+# drop tips that are too long to be true AMF
+to_drop <- c("ASV4995 Gigaspora", "ASV6071 Unknown AMF", "ASV7102 Gigaspora", "ASV5616 Gigaspora")
 
-p3 <- ggtree(pgroup, layout="rectangular", aes(color=group)) + 
-  scale_color_manual(values=c("black", "firebrick", "steelblue","pink")) + geom_tiplab(size = .8, align = TRUE, linesize = .25, offset = 1, linetype = 3, color = "grey") 
+pgroup <- drop.tip(object, to_drop)
+
+pgroup2 <- groupClade(pgroup, c(174, 259, 150))
+
+
+p3 <- ggtree(pgroup2, layout="rectangular", aes(color=group)) + 
+  scale_color_manual(values = pal) + geom_tiplab(size = 1, align = TRUE, linesize = .40, offset = .38, linetype = 3, color = "black") 
 
 #plot a test tree to find nodes for labeling
-ptest <- ggtree(object, layout="rectangular",size=1,aes(color=as.numeric(label))) +
+ptest <- ggtree(pgroup, layout="rectangular",size=1,aes(color=as.numeric(label))) +
   scale_color_gradient("Bootstrap", low = "green", high = "black", limits=c(0,1)) + 
   geom_text2(aes(subset=!isTip, 
 label=node)) +
@@ -286,7 +293,7 @@ ggsave("glomeromycete_test.png", plot = ptest, width = 8, height = 5)
 num_colors <- 100
 
 # Generate the palette from white to red
-palette_white_to_red <- colorRampPalette(c("aquamarine4", "yellow1", "darkorange"))(num_colors)
+palette_white_to_red <- colorRampPalette(c("black", "yellow1", "darkorange","red"))(num_colors)
 
 # Display the first few colors in the palette
 head(palette_white_to_red)
@@ -330,7 +337,7 @@ log_df_otu <- log10(df_otu + 1)
 ```{r}
 
 
-p_heatmap <- gheatmap(p3, log_df_otu, width=.75, offset=0.1, 
+p_heatmap <- gheatmap(p3, log_df_otu, width=.75, offset=0, 
                       legend_title="Relative Abundance", colnames_position="bottom", 
                       colnames_angle=45, colnames_offset_y=0, hjust=1, font.size=1.25) +
   scale_fill_gradientn("Relative abundance", colours = palette_white_to_red) +
