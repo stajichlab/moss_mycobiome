@@ -79,7 +79,7 @@ First, run BCL convert to demultiplex the library. Then, use AMPtk for the follo
 
 ## Phyloseq
 
-Phyloseq, ggplot, and ggtree were used for all data visualization purposes. Samples were rarefied based on the lowest sample read count and singletons were removed. Most phyloseq pipelines were adapted from "Insights into dryland biocrust microbiome: geography, soil depth and crust type affect biocrust microbial communities and networks in Mojave Desert, USA", by Pombupba et. al 2019. Be sure to cite him if you use it. Certainly! Below is a draft README for the described analyses using `phyloseq`, `ggtree`, and `DESeq` for alpha diversity, beta diversity, taxonomic bar plots, log2fold plots with DEseq, and heatmaps with phylogenies:
+Phyloseq, ggplot, and ggtree were used for all data visualization purposes. Samples were rarefied based on the lowest sample read count and singletons were removed. Most phyloseq pipelines were adapted from "Insights into dryland biocrust microbiome: geography, soil depth and crust type affect biocrust microbial communities and networks in Mojave Desert, USA", by Pombupba et. al 2019. Be sure to cite him if you use it. 
 
 ### Alpha Diversity
 
