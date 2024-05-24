@@ -264,9 +264,12 @@ pgroup2 <- groupClade(pgroup, c(174, 259, 150))
 
 
 p3 <- ggtree(pgroup, layout="rectangular") + geom_tiplab(size = 1, align = TRUE, linesize = .1, offset = .38, linetype = 0, color = "black")  +
-  geom_cladelab(node=174, label="Rhizophagus", fontsize=3) +
-  geom_cladelab(node=269, label="Glomus", fontsize=3) +
-  geom_cladelab(node=150, label="Funelliformis", fontsize=3)
+  geom_cladelab(node=174, label="Rhizophagus", fontsize=2) +
+  geom_cladelab(node=269, label="Glomus", fontsize=2) +
+  geom_cladelab(node=168, label="Funelliformis", fontsize=2) +
+  geom_cladelab(node=151, label="Glomus group 2", fontsize=2) + 
+  geom_cladelab(node=171, label="Septoglomus", fontsize=2)
+
 
 #plot a test tree to find nodes for labeling
 ptest <- ggtree(pgroup, layout="rectangular",size=1,aes(color=as.numeric(label))) +
@@ -339,22 +342,34 @@ log_df_otu <- log10(df_otu + 1)
 ```{r}
 
 
-p_heatmap <- gheatmap(p3, log_df_otu, width=1.3, offset=.2, 
+p_heatmap <- gheatmap(p3, log_df_otu, width=1.3, offset=.13, 
                       legend_title="Relative Abundance", colnames_position="bottom", 
                       colnames_angle=45, colnames_offset_y=0, hjust=1, font.size=1.25) +
-  scale_fill_gradientn("Relative abundance", colours = palette_white_to_red) +
-  scale_y_continuous(limits=c(-10, 155)) + theme_tree(legend.position="right") #+ geom_tiplab(size = .8, align = TRUE, #linesize = .25, offset = 1, linetype = 0, color = "grey")
+  scale_fill_gradientn("Abundance", colours = palette_white_to_red) +
+  scale_y_continuous(limits=c(-10, 149)) + theme_tree(legend.position="right") #+ geom_tiplab(size = .8, align = TRUE, #linesize = .25, offset = 1, linetype = 0, color = "grey")
 plot(p_heatmap)
 ```
 ```{r}
+library(rphylopic)
+library(cowplot)
 
-p_heatmap #+ geom_tiplab(size = .8, align = TRUE, linesize = .25, offset = 1, linetype = 1, color = "grey")
+cat <- get_phylopic("23cd6aa4-9587-4a2e-8e26-de42885004c9")
+img <- pick_phylopic(name = "Glomus diaphanum", n = 1)
 
+d <- p_heatmap + add_phylopic(img, x = .05, y = 120,
+                        ysize = 25, color = "black") +  ggtitle("Glomeromycete relative abundance by site and substrate") +
+  theme(plot.title = element_text(hjust = 1.7),
+        legend.text = element_text(hjust = 0.5)) # Center legend text
+d
+```
+```{r}
+
+img <- pick_phylopic(name = "Glomus diaphanum", n = 1)
 ```
 
 ```{r}
 
 # Save the heatmap as a file
-ggsave("glomeromycete.png", plot = p_heatmap, width = 8, height = 5)
+ggsave("glomeromycete.png", plot = d, width = 8, height = 5)
 
 ```
