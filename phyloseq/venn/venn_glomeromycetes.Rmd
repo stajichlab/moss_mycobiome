@@ -197,7 +197,7 @@ Substrate_venn
 
 ```{r}
 
-png("./figures_glom/Substrate_venn.png", units="in", width = 5.8, height = 5.8, res = 300 )
+png("./figures_glom/Substrate_venn.png", units="in", width = 6.2, height = 5.8, res = 300 )
 Substrate_venn
 dev.off()
 
@@ -222,7 +222,10 @@ dev.off()
 
 ```{r}
 
-climate_venn <- ps_venn(physeq.prune.rarefy, "Climate", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
+# Subset the samples based on the crust types
+physeq.prune.rarefy.Surface <- subset_samples(physeq.prune.rarefy, Substrate=="Surface Sterile")
+
+climate_venn <- ps_venn(physeq.prune.rarefy.Surface, "Climate", quantities = list(type=c("counts"), font = 1), labels = list(cex = 1.5), col = "black", fill = c(values = Dali), relative = TRUE)
 
 climate_venn
 
@@ -230,7 +233,7 @@ climate_venn
 
 ```{r}
 
-png("./figures_glom/climate_venn.png", units="in", width = 5.8, height = 5.8, res = 300 )
+png("./figures_glom/climate_venn.png", units="in", width = 6.2, height = 5.8, res = 300 )
 climate_venn
 dev.off()
 

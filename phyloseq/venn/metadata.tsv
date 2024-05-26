@@ -1,66 +1,66 @@
 SampleID	SampleID_2	Layer	Locus	Climate_simple	Site	Substrate	moss_or_soil	Site_Substrate	Near_plant	Seq_technology	Climate	KHK_or_NP	Flowcell	Soil_type	Soil_type_layer	TBD	Sampling_Date
-AlphaA1.TR.1	AlphaA1.TR.1	Subsurface	ITS	Desert	AB	Subsurface	Subsurface	AB Sub	Near_Plant	Miseq	Colorado_Desert	KHK	TBD	Granite	Granite Sub		TBD
-AlphaB1.TR.2	AlphaB1.TR.2	Surface	ITS	Desert	AB	Moss Crust	Moss Crust	AB MC	Near_Plant	Miseq	Colorado_Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
-AlphaB3.TR.2	AlphaB3.TR.2	Surface	ITS	Desert	AB	Moss Crust	Moss Crust	AB MC	Near_Plant	Miseq	Colorado_Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
-AlphaB4.TR.1	AlphaB4.TR.1	Surface	ITS	Desert	AB	Moss Crust	Moss Crust	AB MC	Near_Plant	Miseq	Colorado_Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
-AlphaB5.TR.2.1	AlphaB5.TR.2.1	Surface	ITS	Desert	AB	Moss Crust	Moss Crust	AB MC	Near_Plant	Miseq	Colorado_Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
-AlphaB5.TR.2.2	AlphaB5.TR.2.2	Surface	ITS	Desert	AB	Moss Crust	Moss Crust	AB MC	Near_Plant	Miseq	Colorado_Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
-AlphaC2.TR.2	AlphaC2.TR.2	Surface	ITS	Desert	AB	Surface Sterile	Moss Crust	AB SS	Near_Plant	Miseq	Colorado_Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
-AlphaC4.TR.2	AlphaC4.TR.2	Surface	ITS	Desert	AB	Surface Sterile	Moss Crust	AB MC	Near_Plant	Miseq	Colorado_Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
-BetaA3.TR.2	BetaA3.TR.2	Subsurface	ITS	Desert	ODLO	Subsurface	Subsurface	ODLO Sub	Near_Plant	Miseq	Colorado_Desert	KHK	TBD	Granite	Granite Sub	TBD	TBD
-BetaB1.TR.1	BetaB1.TR.1	Surface	ITS	Desert	ODLO	Moss Crust	Moss Crust	ODLO MC	Near_Plant	Miseq	Colorado_Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
-BetaB2.TR.2	BetaB2.TR.2	Surface	ITS	Desert	ODLO	Surface Sterile	Moss Crust	ODLO SS	Near_Plant	Miseq	Colorado_Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
-BetaC1.TR.2	BetaC1.TR.2	Surface	ITS	Desert	ODLO	Surface Sterile	Moss Crust	ODLO SS	Near_Plant	Miseq	Colorado_Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
-BetaC2.TR.2	BetaC2.TR.2	Surface	ITS	Desert	ODLO	Moss Crust	Moss Crust	ODLO MC	Near_Plant	Miseq	Colorado_Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
-GammaA5.TR.2	GammaA5.TR.2	Subsurface	ITS	Desert	CIMA	Subsurface	Subsurface	CIMA Sub	Near_Plant	Miseq	Mojave_Desert	KHK	TBD	Granite	Granite Sub	TBD	TBD
-GammaB1.TR.1	GammaB1.TR.1	Surface	ITS	Desert	CIMA	Moss Crust	Moss Crust	CIMA MC	Near_Plant	Miseq	Mojave_Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
-GammaB4.TR.2	GammaB4.TR.2	Surface	ITS	Desert	CIMA	Moss Crust	Moss Crust	CIMA MC	Near_Plant	Miseq	Mojave_Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
-GammaB5.TR.2	GammaB5.TR.2	Surface	ITS	Desert	CIMA	Moss Crust	Moss Crust	CIMA MC	Near_Plant	Miseq	Mojave_Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
-GammaC2.TR.2.1	GammaC2.TR.2.1	Surface	ITS	Desert	CIMA	Surface Sterile	Moss Crust	CIMA SS	Near_Plant	Miseq	Mojave_Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
-GammaC2.TR.2.2	GammaC2.TR.2.2	Surface	ITS	Desert	CIMA	Surface Sterile	Moss Crust	CIMA SS	Near_Plant	Miseq	Mojave_Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
-GammaC3.TR.1	GammaC3.TR.1	Surface	ITS	Desert	CIMA	Surface Sterile	Moss Crust	CIMA SS	Near_Plant	Miseq	Mojave_Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
-GammaD4.TR.2	GammaD4.TR.2	Subsurface	ITS	Desert	CIMA	Dirt	Dirt	CIMA Dirt	Near_Plant	Miseq	Mojave_Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
-GammaD5.TR.2	GammaD5.TR.2	Subsurface	ITS	Desert	CIMA	Dirt	Dirt	CIMA Dirt	Near_Plant	Miseq	Mojave_Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
-AlphaD2	AlphaD2	Subsurface	ITS	Desert	AB	Dirt	Dirt	AB Dirt	Near_Plant	Nextseq	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-AlphaD1	AlphaD1	Subsurface	ITS	Desert	AB	Dirt	Dirt	AB Dirt	Near_Plant	Nextseq	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-deltaB3	deltaB3	Surface	ITS	Desert	GMT	Moss Crust	Moss Crust	GMT MC	Not_Near	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-BetaD3	BetaD3	Subsurface	ITS	Desert	ODLO	Dirt	Dirt	ODLO Dirt	Near_Plant	Nextseq	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-BetaD1	BetaD1	Subsurface	ITS	Desert	ODLO	Dirt	Dirt	ODLO Dirt	Near_Plant	Nextseq	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-deltaC2	deltaC2	Surface	ITS	Desert	GMT	Surface Sterile	Moss Crust	GMT SS	Not_Near	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-deltaD1	deltaD1	Subsurface	ITS	Desert	GMT	Dirt	Dirt	GMT Dirt	Not_Near	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-AlphaA3	AlphaA3	Subsurface	ITS	Desert	AB	Subsurface	Subsurface	AB Sub	Near_Plant	Nextseq	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
+AlphaA1.TR.1	AlphaA1.TR.1	Subsurface	ITS	Desert	AB	Subsurface	Subsurface	AB Sub	Near_Plant	Miseq	Colorado Desert	KHK	TBD	Granite	Granite Sub		TBD
+AlphaB1.TR.2	AlphaB1.TR.2	Surface	ITS	Desert	AB	Moss Crust	Moss Crust	AB MC	Near_Plant	Miseq	Colorado Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
+AlphaB3.TR.2	AlphaB3.TR.2	Surface	ITS	Desert	AB	Moss Crust	Moss Crust	AB MC	Near_Plant	Miseq	Colorado Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
+AlphaB4.TR.1	AlphaB4.TR.1	Surface	ITS	Desert	AB	Moss Crust	Moss Crust	AB MC	Near_Plant	Miseq	Colorado Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
+AlphaB5.TR.2.1	AlphaB5.TR.2.1	Surface	ITS	Desert	AB	Moss Crust	Moss Crust	AB MC	Near_Plant	Miseq	Colorado Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
+AlphaB5.TR.2.2	AlphaB5.TR.2.2	Surface	ITS	Desert	AB	Moss Crust	Moss Crust	AB MC	Near_Plant	Miseq	Colorado Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
+AlphaC2.TR.2	AlphaC2.TR.2	Surface	ITS	Desert	AB	Surface Sterile	Moss Crust	AB SS	Near_Plant	Miseq	Colorado Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
+AlphaC4.TR.2	AlphaC4.TR.2	Surface	ITS	Desert	AB	Surface Sterile	Moss Crust	AB MC	Near_Plant	Miseq	Colorado Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
+BetaA3.TR.2	BetaA3.TR.2	Subsurface	ITS	Desert	ODLO	Subsurface	Subsurface	ODLO Sub	Near_Plant	Miseq	Colorado Desert	KHK	TBD	Granite	Granite Sub	TBD	TBD
+BetaB1.TR.1	BetaB1.TR.1	Surface	ITS	Desert	ODLO	Moss Crust	Moss Crust	ODLO MC	Near_Plant	Miseq	Colorado Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
+BetaB2.TR.2	BetaB2.TR.2	Surface	ITS	Desert	ODLO	Surface Sterile	Moss Crust	ODLO SS	Near_Plant	Miseq	Colorado Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
+BetaC1.TR.2	BetaC1.TR.2	Surface	ITS	Desert	ODLO	Surface Sterile	Moss Crust	ODLO SS	Near_Plant	Miseq	Colorado Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
+BetaC2.TR.2	BetaC2.TR.2	Surface	ITS	Desert	ODLO	Moss Crust	Moss Crust	ODLO MC	Near_Plant	Miseq	Colorado Desert	KHK	TBD	Granite	Granite_SF	TBD	TBD
+GammaA5.TR.2	GammaA5.TR.2	Subsurface	ITS	Desert	CIMA	Subsurface	Subsurface	CIMA Sub	Near_Plant	Miseq	Mojave Desert	KHK	TBD	Granite	Granite Sub	TBD	TBD
+GammaB1.TR.1	GammaB1.TR.1	Surface	ITS	Desert	CIMA	Moss Crust	Moss Crust	CIMA MC	Near_Plant	Miseq	Mojave Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
+GammaB4.TR.2	GammaB4.TR.2	Surface	ITS	Desert	CIMA	Moss Crust	Moss Crust	CIMA MC	Near_Plant	Miseq	Mojave Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
+GammaB5.TR.2	GammaB5.TR.2	Surface	ITS	Desert	CIMA	Moss Crust	Moss Crust	CIMA MC	Near_Plant	Miseq	Mojave Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
+GammaC2.TR.2.1	GammaC2.TR.2.1	Surface	ITS	Desert	CIMA	Surface Sterile	Moss Crust	CIMA SS	Near_Plant	Miseq	Mojave Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
+GammaC2.TR.2.2	GammaC2.TR.2.2	Surface	ITS	Desert	CIMA	Surface Sterile	Moss Crust	CIMA SS	Near_Plant	Miseq	Mojave Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
+GammaC3.TR.1	GammaC3.TR.1	Surface	ITS	Desert	CIMA	Surface Sterile	Moss Crust	CIMA SS	Near_Plant	Miseq	Mojave Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
+GammaD4.TR.2	GammaD4.TR.2	Subsurface	ITS	Desert	CIMA	Dirt	Dirt	CIMA Dirt	Near_Plant	Miseq	Mojave Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
+GammaD5.TR.2	GammaD5.TR.2	Subsurface	ITS	Desert	CIMA	Dirt	Dirt	CIMA Dirt	Near_Plant	Miseq	Mojave Desert	KHK	TBD	Volcanic	Volcanic_SF	TBD	TBD
+AlphaD2	AlphaD2	Subsurface	ITS	Desert	AB	Dirt	Dirt	AB Dirt	Near_Plant	Nextseq	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
+AlphaD1	AlphaD1	Subsurface	ITS	Desert	AB	Dirt	Dirt	AB Dirt	Near_Plant	Nextseq	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
+deltaB3	deltaB3	Surface	ITS	Desert	GMT	Moss Crust	Moss Crust	GMT MC	Not_Near	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
+BetaD3	BetaD3	Subsurface	ITS	Desert	ODLO	Dirt	Dirt	ODLO Dirt	Near_Plant	Nextseq	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
+BetaD1	BetaD1	Subsurface	ITS	Desert	ODLO	Dirt	Dirt	ODLO Dirt	Near_Plant	Nextseq	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
+deltaC2	deltaC2	Surface	ITS	Desert	GMT	Surface Sterile	Moss Crust	GMT SS	Not_Near	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
+deltaD1	deltaD1	Subsurface	ITS	Desert	GMT	Dirt	Dirt	GMT Dirt	Not_Near	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
+AlphaA3	AlphaA3	Subsurface	ITS	Desert	AB	Subsurface	Subsurface	AB Sub	Near_Plant	Nextseq	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
 OmegaA3	OmegaA3	Subsurface	ITS	Coastal	TP	Subsurface	Subsurface	TP Sub	Not_Near	Nextseq	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
-deltaC1	deltaC1	Surface	ITS	Desert	GMT	Surface Sterile	Moss Crust	GMT SS	Not_Near	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
+deltaC1	deltaC1	Surface	ITS	Desert	GMT	Surface Sterile	Moss Crust	GMT SS	Not_Near	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
 OmegaD3	OmegaD3	Subsurface	ITS	Coastal	TP	Dirt	Dirt	TP Dirt	Not_Near	Nextseq	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
-BetaA2	BetaA2	Subsurface	ITS	Desert	ODLO	Subsurface	Subsurface	ODLO Sub	Near_Plant	Nextseq	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
+BetaA2	BetaA2	Subsurface	ITS	Desert	ODLO	Subsurface	Subsurface	ODLO Sub	Near_Plant	Nextseq	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
 OmegaB1	OmegaB1	Surface	ITS	Coastal	TP	Moss Crust	Moss Crust	TP MC	Not_Near	Nextseq	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
-GammaA2	GammaA2	Subsurface	ITS	Desert	CIMA	Subsurface	Subsurface	CIMA Sub	Near_Plant	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
+GammaA2	GammaA2	Subsurface	ITS	Desert	CIMA	Subsurface	Subsurface	CIMA Sub	Near_Plant	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
 OmegaC1	OmegaC1	Surface	ITS	Coastal	TP	Surface Sterile	Moss Crust	TP SS	Not_Near	Nextseq	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
-deltaB2	deltaB2	Surface	ITS	Desert	GMT	Moss Crust	Moss Crust	GMT MC	Not_Near	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
+deltaB2	deltaB2	Surface	ITS	Desert	GMT	Moss Crust	Moss Crust	GMT MC	Not_Near	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
 OmegaB3	OmegaB3	Surface	ITS	Coastal	TP	Moss Crust	Moss Crust	TP MC	Not_Near	Nextseq	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
-deltaC3	deltaC3	Surface	ITS	Desert	GMT	Surface Sterile	Moss Crust	GMT SS	Not_Near	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
+deltaC3	deltaC3	Surface	ITS	Desert	GMT	Surface Sterile	Moss Crust	GMT SS	Not_Near	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
 OmegaA2	OmegaA2	Subsurface	ITS	Coastal	TP	Subsurface	Subsurface	TP Sub	Not_Near	Nextseq	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
 OmegaB2	OmegaB2	Surface	ITS	Coastal	TP	Moss Crust	Moss Crust	TP MC	Not_Near	Nextseq	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
-BetaD2	BetaD2	Subsurface	ITS	Desert	ODLO	Dirt	Dirt	ODLO Dirt	Near_Plant	Nextseq	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-deltaB1	deltaB1	Surface	ITS	Desert	GMT	Moss Crust	Moss Crust	GMT MC	Not_Near	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-deltaA1	deltaA1	Subsurface	ITS	Desert	GMT	Subsurface	Subsurface	GMT Sub	Not_Near	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
+BetaD2	BetaD2	Subsurface	ITS	Desert	ODLO	Dirt	Dirt	ODLO Dirt	Near_Plant	Nextseq	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
+deltaB1	deltaB1	Surface	ITS	Desert	GMT	Moss Crust	Moss Crust	GMT MC	Not_Near	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
+deltaA1	deltaA1	Subsurface	ITS	Desert	GMT	Subsurface	Subsurface	GMT Sub	Not_Near	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
 OmegaC3	OmegaC3	Surface	ITS	Coastal	TP	Surface Sterile	Moss Crust	TP SS	Not_Near	Nextseq	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
-AlphaC3	AlphaC3	Surface	ITS	Desert	AB	Surface Sterile	Moss Crust	AB SS	Near_Plant	Nextseq	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
+AlphaC3	AlphaC3	Surface	ITS	Desert	AB	Surface Sterile	Moss Crust	AB SS	Near_Plant	Nextseq	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
 OmegaD1	OmegaD1	Subsurface	ITS	Coastal	TP	Dirt	Dirt	TP Dirt	Not_Near	Nextseq	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
-GammaD1	GammaD1	Subsurface	ITS	Desert	CIMA	Dirt	Dirt	CIMA Dirt	Near_Plant	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
+GammaD1	GammaD1	Subsurface	ITS	Desert	CIMA	Dirt	Dirt	CIMA Dirt	Near_Plant	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
 OmegaD2	OmegaD2	Subsurface	ITS	Coastal	TP	Dirt	Dirt	TP Dirt	Not_Near	Nextseq	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
-AlphaD3	AlphaD3	Subsurface	ITS	Desert	AB	Dirt	Dirt	AB Dirt	Near_Plant	Nextseq	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-deltaA2	deltaA2	Subsurface	ITS	Desert	GMT	Subsurface	Subsurface	GMT Sub	Not_Near	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-deltaD2	deltaD2	Subsurface	ITS	Desert	GMT	Dirt	Dirt	GMT Dirt	Not_Near	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
+AlphaD3	AlphaD3	Subsurface	ITS	Desert	AB	Dirt	Dirt	AB Dirt	Near_Plant	Nextseq	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
+deltaA2	deltaA2	Subsurface	ITS	Desert	GMT	Subsurface	Subsurface	GMT Sub	Not_Near	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
+deltaD2	deltaD2	Subsurface	ITS	Desert	GMT	Dirt	Dirt	GMT Dirt	Not_Near	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
 OmegaC2	OmegaC2	Surface	ITS	Coastal	TP	Surface Sterile	Moss Crust	TP SS	Not_Near	Nextseq	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
-BetaC3	BetaC3	Surface	ITS	Desert	ODLO	Surface Sterile	Moss Crust	ODLO SS	Near_Plant	Nextseq	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-deltaA3	deltaA3	Subsurface	ITS	Desert	GMT	Subsurface	Subsurface	GMT Sub	Not_Near	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
+BetaC3	BetaC3	Surface	ITS	Desert	ODLO	Surface Sterile	Moss Crust	ODLO SS	Near_Plant	Nextseq	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
+deltaA3	deltaA3	Subsurface	ITS	Desert	GMT	Subsurface	Subsurface	GMT Sub	Not_Near	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
 OmegaA1	OmegaA1	Subsurface	ITS	Coastal	TP	Subsurface	Subsurface	TP Sub	Not_Near	Nextseq	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
-AlphaA2	AlphaA2	Subsurface	ITS	Desert	AB	Subsurface	Subsurface	AB Sub	Near_Plant	Nextseq	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-GammaA3	GammaA3	Subsurface	ITS	Desert	CIMA	Subsurface	Subsurface	CIMA Sub	Near_Plant	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-deltaD3	deltaD3	Subsurface	ITS	Desert	GMT	Dirt	Dirt	GMT Dirt	Not_Near	Nextseq	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-BetaB3	BetaB3	Surface	ITS	Desert	ODLO	Moss Crust	Moss Crust	ODLO MC	Near_Plant	Nextseq	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-BetaA3	BetaA3	Subsurface	ITS	Desert	ODLO	Subsurface	Subsurface	ODLO Sub	Near_Plant	Nextseq	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
+AlphaA2	AlphaA2	Subsurface	ITS	Desert	AB	Subsurface	Subsurface	AB Sub	Near_Plant	Nextseq	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
+GammaA3	GammaA3	Subsurface	ITS	Desert	CIMA	Subsurface	Subsurface	CIMA Sub	Near_Plant	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
+deltaD3	deltaD3	Subsurface	ITS	Desert	GMT	Dirt	Dirt	GMT Dirt	Not_Near	Nextseq	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
+BetaB3	BetaB3	Surface	ITS	Desert	ODLO	Moss Crust	Moss Crust	ODLO MC	Near_Plant	Nextseq	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
+BetaA3	BetaA3	Subsurface	ITS	Desert	ODLO	Subsurface	Subsurface	ODLO Sub	Near_Plant	Nextseq	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
 phiA1	phiA1	Subsurface	ITS	Coastal	TP2	Subsurface	NA	NA	Near_Plant	Nano	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
 phiA2	phiA2	Subsurface	ITS	Coastal	TP2	Subsurface	NA	NA	Near_Plant	Nano	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
 phiA3	phiA3	Subsurface	ITS	Coastal	TP2	Subsurface	NA	NA	Near_Plant	Nano	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
@@ -73,8 +73,8 @@ phiC3	phiC3	Surface	ITS	Coastal	TP2	Surface Sterile	NA	NA	Near_Plant	Nano	Coasta
 phiD1	phiD1	Subsurface	ITS	Coastal	TP2	Dirt	NA	NA	Near_Plant	Nano	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
 phiD2	phiD2	Subsurface	ITS	Coastal	TP2	Dirt	NA	NA	Near_Plant	Nano	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
 phiD3	phiD3	Subsurface	ITS	Coastal	TP2	Dirt	NA	NA	Near_Plant	Nano	Coastal	KHK	TBD	TBD	TBD	TBD	TBD
-DeltaA1.TR2	DeltaA1.TR2	Subsurface	ITS	Desert	GMT	Subsurface	NA	NA	Not_Near	Nano	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-DeltaA3.TR2	DeltaA3.TR2	Subsurface	ITS	Desert	GMT	Subsurface	NA	NA	Not_Near	Nano	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-BetaC3.TR2	BetaC3.TR2	Surface	ITS	Desert	ODLO	Surface Sterile	NA	NA	Not_Near	Nano	Colorado_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-GammaC2	GammaC2	Surface	ITS	Desert	CIMA	Surface Sterile	NA	NA	Near_Plant	Nano	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
-GammaC3	GammaC3	Surface	ITS	Desert	CIMA	Surface Sterile	NA	NA	Near_Plant	Nano	Mojave_Desert	KHK	TBD	TBD	TBD	TBD	TBD
+DeltaA1.TR2	DeltaA1.TR2	Subsurface	ITS	Desert	GMT	Subsurface	NA	NA	Not_Near	Nano	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
+DeltaA3.TR2	DeltaA3.TR2	Subsurface	ITS	Desert	GMT	Subsurface	NA	NA	Not_Near	Nano	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
+BetaC3.TR2	BetaC3.TR2	Surface	ITS	Desert	ODLO	Surface Sterile	NA	NA	Not_Near	Nano	Colorado Desert	KHK	TBD	TBD	TBD	TBD	TBD
+GammaC2	GammaC2	Surface	ITS	Desert	CIMA	Surface Sterile	NA	NA	Near_Plant	Nano	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
+GammaC3	GammaC3	Surface	ITS	Desert	CIMA	Surface Sterile	NA	NA	Near_Plant	Nano	Mojave Desert	KHK	TBD	TBD	TBD	TBD	TBD
