@@ -199,6 +199,16 @@ physeq.prune.x.SF.ord <- ordinate(physeq.prune.x, "PCoA", "bray")
 
 ```
 
+###Permanova Substrate
+
+```{r}
+
+ps.dist = phyloseq::distance(physeq.prune.x, "bray")
+
+adonis2(ps.dist ~ Substrate, as(sample_data(physeq.prune.x),"data.frame"))
+```
+###Beta by site ordination
+
 ```{r}
 
 physeq.prune.SF <- subset_samples(physeq.prune.rarefy, Layer=="Surface")
@@ -215,6 +225,14 @@ physeq.prune.SF.x <- prune_samples(sample_sums(physeq.prune.SF.x)>=1, physeq.pru
 physeq.prune.x.SF.ord.2 <- ordinate(physeq.prune.SF.x, "PCoA", "bray")
 
 ```
+###Permanova Site
+
+```{r}
+
+ps.dist2 = phyloseq::distance(physeq.prune.SF.x, "bray")
+
+adonis2(ps.dist2 ~ Site, as(sample_data(physeq.prune.SF.x),"data.frame"))
+```
 
 ```{r}
 sample_data(physeq.prune.x)$Substrate = factor(sample_data(physeq.prune.x)$Substrate, levels = c("Moss Crust","Subsurface", "Dirt", "Surface Sterile"))
@@ -229,7 +247,7 @@ Dali <- moma.colors("Dali")
 
 
 ```{r}
-pscrusttype = plot_ordination(physeq.prune.x, physeq.prune.x.SF.ord, type = "Substrate", color = "Substrate")  + theme_bw() + ggtitle("Fungal Beta Diversity (PCoA) by sterilization state") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Dali) 
+pscrusttype = plot_ordination(physeq.prune.x, physeq.prune.x.SF.ord, type = "Substrate", color = "Substrate")  + theme_bw() + ggtitle("Glomeromycete Beta Diversity (PCoA) by substrate") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Dali) + annotate("text", x = 1, y = 0.54, label = "PERMANOVA, p = 0.006")
 
 pscrusttype
 
@@ -249,7 +267,7 @@ sample_data(physeq.prune.x)$Site = factor(sample_data(physeq.prune.x)$Site, leve
 
 
 ```{r}
-pssite = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Site", color = "Site")  + theme_bw() + ggtitle("Fungal Beta Diversity (PCoA) by Site") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Dali) 
+pssite = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Site", color = "Site")  + theme_bw() + ggtitle("Glomeromycete Beta Diversity (PCoA) by Site") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Dali) + annotate("text", x = -.5, y = -.7, label = "PERMANOVA, p = 0.003")
 
 pssite
 ```
