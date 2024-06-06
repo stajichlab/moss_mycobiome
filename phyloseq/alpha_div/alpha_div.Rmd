@@ -525,14 +525,14 @@ Site and Layer
 
 ```{r}
 pdf("./Figures/Fungal_Class_Alpha_Div_by_Site.pdf", width = 8, height = 5)
-
+Warhol <- moma.colors("Warhol")
 for (i in FungiClass) {
   APS = subset_taxa(physeq.prune.rarefy.SF, Class == i)
   APS.plot = plot_richness(APS, x="Site", color =("Site"), measures=c("Observed", "Chao1")) +
     ggtitle(i) +
     stat_compare_means(method = "anova") +
     theme_bw() +
-    scale_color_manual(values = Dali) +  
+    scale_color_manual(values = Warhol) +  
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
     geom_boxplot() +
     theme(plot.title = element_text(hjust = 0.5))
@@ -542,23 +542,47 @@ for (i in FungiClass) {
 dev.off()
 
 ```
+```{r}
+pdf("./Figures/Fungal_Class_Alpha_Div_by_Site_black.pdf", width = 8, height = 5)
+color1 <- c("black")
+for (i in FungiClass) {
+  APS = subset_taxa(physeq.prune.rarefy.SF, Class == i)
+  APS.plot = plot_richness(APS, x="Site", color = "color", measures=c("Observed", "Chao1")) +
+    ggtitle(i) +
+    stat_compare_means(method = "anova") +
+    theme_bw() +
+    scale_color_manual(values = color1) +  
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+    geom_boxplot() +
+    theme(plot.title = element_text(hjust = 0.5))
+  print(APS.plot)
+}
+
+dev.off()
+
+```
+
 ###STEP11.5: Plotting alpha diversity for each class by crust type
 
 
 Save pdf of plot_richness results for each fungal class in the loop
 which go through FungiClass Note: following code plot alpha diversity by
 Crust type
+```{r}
+FungiClass = as.character(get_taxa_unique(physeq.prune.rarefy, "Class"))
+FungiClass = FungiClass[complete.cases(FungiClass)]
+```
 
 ```{r}
 pdf("./Figures/Fungal_Class_Alpha_Div_by_Substrate.pdf", width = 8, height = 5)
 
 for (i in FungiClass) {
-  APS = subset_taxa(physeq.prune.rarefy.SF, Class == i)
+  APS = subset_taxa(physeq.prune.rarefy, Class == i)
   APS.plot = plot_richness(APS, x="Substrate", color =("Substrate"), measures=c("Observed", "Chao1")) +
     ggtitle(i) +
     stat_compare_means(method = "anova") +
     theme_bw() +
-    scale_color_manual(values = Dali) +  
+    scale_color_manual(values = Warhol) +  
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
     geom_boxplot() +
     theme(plot.title = element_text(hjust = 0.5))
