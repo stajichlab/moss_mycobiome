@@ -240,14 +240,14 @@ sample_data(physeq.prune.x)$Substrate = factor(sample_data(physeq.prune.x)$Subst
 
 ```{r}
 
-# Get the Dali palette
-Dali <- moma.colors("Dali")
+# Get the Warhol palette
+Warhol <- moma.colors("Warhol")
 
 ```
 
 
 ```{r}
-pscrusttype = plot_ordination(physeq.prune.x, physeq.prune.x.SF.ord, type = "Substrate", color = "Substrate")  + theme_bw() + ggtitle("Glomeromycete Beta Diversity (PCoA) by substrate") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Dali) + annotate("text", x = 1, y = 0.54, label = "PERMANOVA, p = 0.006")
+pscrusttype = plot_ordination(physeq.prune.x, physeq.prune.x.SF.ord, type = "Substrate", color = "Substrate")  + theme_bw() + ggtitle("Glomeromycete Beta Diversity (PCoA) by substrate") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) + annotate("text", x = 1, y = 0.54, label = "PERMANOVA, p = 0.006")
 
 pscrusttype
 
@@ -267,7 +267,7 @@ sample_data(physeq.prune.x)$Site = factor(sample_data(physeq.prune.x)$Site, leve
 
 
 ```{r}
-pssite = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Site", color = "Site")  + theme_bw() + ggtitle("Glomeromycete Beta Diversity (PCoA) by Site") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Dali) + annotate("text", x = -.5, y = -.7, label = "PERMANOVA, p = 0.003")
+pssite = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Site", color = "Site")  + theme_bw() + ggtitle("Glomeromycete Beta Diversity (PCoA) by Site") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) + annotate("text", x = -.5, y = -.7, label = "PERMANOVA, p = 0.003")
 
 pssite
 ```
@@ -289,7 +289,7 @@ sample_data(physeq.prune.x)$Climate = factor(sample_data(physeq.prune.x)$Climate
 ```
 
 ```{r}
-psClimate = plot_ordination(physeq.prune.x.SF, physeq.prune.x.SF.ord, type = "Climate", color = "Climate")  + theme_bw() + ggtitle("Fungal Beta Diversity (PCoA) by Climate") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Dali) 
+psClimate = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Climate", color = "Climate")  + theme_bw() + ggtitle("Fungal Beta Diversity (PCoA) by Climate") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) 
 
 psClimate
 ```
@@ -308,7 +308,7 @@ sample_data(physeq.prune.x)$Near_plant = factor(sample_data(physeq.prune.x)$Near
 
 
 ```{r}
-psPlant= plot_ordination(physeq.prune.x.SF, physeq.prune.x.SF.ord, type = "Near_plant", color = "Near_plant")  + theme_bw() + ggtitle("Fungal Beta Diversity (PCoA) by plant proximity") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Dali) 
+psPlant= plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Near_plant", color = "Near_plant")  + theme_bw() + ggtitle("Fungal Beta Diversity (PCoA) by plant proximity") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) 
 
 psPlant
 ```
