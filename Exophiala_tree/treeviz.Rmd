@@ -11,15 +11,13 @@ library(ggtreeExtra)
 ```{r}
 
 # Read the tree file
-tree <- read.tree("modified.tree.txt")
+tree <- read.tree("ITOL.treefile")
 
 # Check the structure of straintree
 # Root the tree
-tree <- root(tree, outgroup = "Paraglomus_occultum")
+tree <- root(tree, outgroup = "Mortierella_globalpina")
 
-to_drop <- c("Mortierella_globalpina", "Archaeospora_ecuadoriana","Acaulospora_entreriana","Acaulospora_laevis","Acaulospora_spinosa","Acaulospora_cavernata","Acaulospora_colombiana", "Paraglomus_occultum")
-
-tree <- drop.tip(tree, to_drop)
+tree <- drop.tip(tree, "Mortierella_globalpina")
 
 ```
 
@@ -32,14 +30,15 @@ tree <- drop.tip(tree, to_drop)
 
 # Based on the structure of straintree, identify the correct attribute for bootstrap values
 ```{r}
-
-p1 <- ggtree(tree, layout="rectangular", size=.75, aes(color=as.numeric(label))) +
+p1 <- ggtree(tree, layout="circular", size=.75, aes(color=as.numeric(label)), branch.length="none") +
   scale_color_gradient("Bootstrap", low = "green", high = "black", limits=c(0,100)) + 
   new_scale_color() +
-  geom_tiplab(aes(color=ifelse(grepl("ASV", label), "blue", "black")), size=2.75) + 
-  theme(legend.position = "bottom") +
-  scale_y_continuous(limits=c(1, 225)) +
-  scale_color_identity()
+  geom_tiplab(aes(color=ifelse(grepl("ASV", label), "blue", ifelse(grepl("KHK", label), "red", "black"))), size=5) + 
+  theme(legend.position = "bottom", legend.key.size = unit(4, "lines"), legend.text = element_text(size = 12)) + # Increase legend text size
+  scale_y_continuous(limits=c(1, 100)) +
+  scale_color_identity() +
+  labs(color = "Legend Title") # Add legend title
+
 
 
 plot(p1)
@@ -48,5 +47,5 @@ plot(p1)
 ```{r}
 
 # Save the plot to an image file
-ggsave("NCBIreftree.png", p1, width = 25, height = 25)
+ggsave("NCBIreftree.png", p1, width = 30, height = 26)
 ```
