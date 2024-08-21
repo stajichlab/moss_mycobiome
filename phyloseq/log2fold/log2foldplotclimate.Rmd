@@ -233,6 +233,16 @@ alpha = 0.01
 sigtab = res[which(res$padj < alpha), ]
 sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(physeq.prune.SF.SF.Climate_simple)[rownames(sigtab), ], "matrix"))
 head(sigtab)
+
+# Save the sigtab data frame as a TSV file
+write.table(sigtab, file = "sigtab.tsv", sep = "\t", row.names = TRUE, col.names = NA, quote = FALSE)
+
+# Filter the sigtab data frame to include only rows with non-NA species names
+sigtab_filtered_species = sigtab %>% filter(!is.na(Species))
+
+# Save the filtered sigtab data frame as a TSV file
+write.table(sigtab_filtered_species, file = "sigtab_filtered_species.tsv", sep = "\t", row.names = TRUE, col.names = NA, quote = FALSE)
+
 ```
 
 ###STEP10.3 make color pallette
