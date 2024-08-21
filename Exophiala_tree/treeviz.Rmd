@@ -33,8 +33,8 @@ tree <- drop.tip(tree, "Mortierella_globalpina")
 p1 <- ggtree(tree, layout="circular", size=.75, aes(color=as.numeric(label)), branch.length="none") +
   scale_color_gradient("Bootstrap", low = "green", high = "black", limits=c(0,100)) + 
   new_scale_color() +
-  geom_tiplab(aes(color=ifelse(grepl("ASV", label), "blue", ifelse(grepl("KHK", label), "red", "black"))), size=5) + 
-  theme(legend.position = "bottom", legend.key.size = unit(4, "lines"), legend.text = element_text(size = 12)) + # Increase legend text size
+  geom_tiplab(aes(color=ifelse(grepl("ASV", label), "blue", ifelse(grepl("culture", label), "red", "black"))), size=5) + 
+  theme(legend.position = "bottom", legend.key.size = unit(4, "lines"), legend.text = element_text(size = 18)) + # Increase legend text size
   scale_y_continuous(limits=c(1, 100)) +
   scale_color_identity() +
   labs(color = "Legend Title") # Add legend title
