@@ -1,11 +1,11 @@
 ---
-title: "DEseq Log2fold plot climate"
+title: "DEseq log2fold plot before and after surface sterilization"
 author: "Kian Kelly"
 date: "Updated on 5/24"
 output: html_document
 ---
 
-#DEseq Log2fold plot climate
+# DEseq Log2fold plot by sterilization state
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -163,9 +163,9 @@ head(readcount)
 ```
 
 ```{r warning=FALSE}
-set.seed(1)
-#physeq.prune.SF.SF = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
-#physeq.prune.SF.SF
+#set.seed(1)
+#physeq.prune = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
+#physeq.prune
 ```
 
 ```{r}
@@ -178,20 +178,23 @@ Dali
 ###STEP10: Log2foldplot, adapted from https://joey711.github.io/phyloseq-extensions/DESeq2.html
 
 Subset so that only the variables of interest are present
-
-###STEP10.01 only include surface samples 
 ```{r}
+# Create a vector containing both "SMC" and "SMC.ster"
+#Substrates <- c("Moss Crust", "Surface Sterile")
 
-physeq.prune.SF.SF = subset_samples(physeq.prune, Layer=="Surface")
+# Subset the samples based on the crust types
+#physeq.prune.Substrate <- subset_samples(physeq.prune, Substrate %in% Substrates)
 
+#physeq.prune.Substrate
 ```
+
 
 ###STEP10.1 add 1 for every ASV to avoid infinite values
 
 ```{r}
 
 
-otu_tab <- otu_table(physeq.prune.SF.SF)
+otu_tab <- otu_table(physeq.prune)
 
 # Convert the OTU table to a matrix
 otu_mat <- as.matrix(otu_tab)
@@ -203,10 +206,10 @@ otu_mat <- otu_mat + 1
 otu_tab_modified <- otu_table(otu_mat, taxa_are_rows = TRUE)
 
 # Update the OTU table in the phyloseq object
-physeq.prune.SF.SF.Climate_simple <- merge_phyloseq(physeq.prune.SF.SF, otu_tab_modified)
+physeq.prune <- merge_phyloseq(physeq.prune, otu_tab_modified)
 
 # Check the modified phyloseq object
-physeq.prune.SF.SF.Climate_simple
+physeq.prune
 
 
 ```
@@ -218,31 +221,30 @@ physeq.prune.SF.SF.Climate_simple
 
 
 # Run DESeq2 analysis on filtered count matrix
-DEseq_Climate_simple <- phyloseq_to_deseq2(physeq.prune.SF.SF.Climate_simple, ~ Climate_simple)
-DEseq_Climate_simple <- DESeq(DEseq_Climate_simple, test="Wald", fitType="parametric")
+DEseq_substrate <- phyloseq_to_deseq2(physeq.prune, ~ Layer)
+DEseq_substrate <- DESeq(DEseq_substrate, test="Wald", fitType="parametric")
 
 # Check results
-DEseq_Climate_simple
+DEseq_substrate
 ```
 
 make a table of the results above specified alpha
 
 ```{r}
-res = results(DEseq_Climate_simple, cooksCutoff = FALSE)
+res = results(DEseq_substrate, cooksCutoff = FALSE)
 alpha = 0.01
 sigtab = res[which(res$padj < alpha), ]
-sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(physeq.prune.SF.SF.Climate_simple)[rownames(sigtab), ], "matrix"))
+sigtab = cbind(as(sigtab, "data.frame"), as(tax_table(physeq.prune)[rownames(sigtab), ], "matrix"))
 head(sigtab)
+```
 
-
+```{r}
 # Filter the sigtab data frame to include only rows with non-NA species names
 sigtab_filtered_species = sigtab %>% filter(!is.na(Species))
 
 # Save the filtered sigtab data frame as a TSV file
 write.table(sigtab_filtered_species, file = "sigtab_filtered_species.tsv", sep = "\t", row.names = TRUE, col.names = NA, quote = FALSE)
-
 ```
-
 ###STEP10.3 make color pallette
 
 ```{r fig.height=5, fig.width=8, fig.align="center"}
@@ -283,10 +285,10 @@ x = sort(x, TRUE)
 sigtab_filtered$Genus = factor(as.character(sigtab_filtered$Genus), levels=names(x))
 
 log2plot <- ggplot(sigtab_filtered, aes(x=Genus, y=log2FoldChange, color=Class)) + 
-  geom_point(size=3) + 
+  geom_point(size=2) + 
   scale_color_manual(values = Dali) + 
-  ggtitle("Desert vs coastal mycobiome log2Fold change") + 
-  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust=0.5, size = 6),
+  ggtitle("Moss biocrust vs soil mycobiome") + 
+  theme(axis.text.x = element_text(size = 5, angle = -90, hjust = 0, vjust=0.5),
         panel.grid.major.x = element_blank(),  # Remove major x-axis gridlines
         panel.grid.minor.x = element_blank(),  # Remove minor x-axis gridlines
         panel.grid.minor.y = element_blank())   # Remove minor x-axis gridlines
@@ -299,7 +301,7 @@ log2plot
 ```{r}
 
 # Save the heatmap as a file
-ggsave("log2plot_Desert_vs_coast.png", plot = log2plot, width = 8, height = 6)
+ggsave("log2plot_soil_vs_moss.png", plot = log2plot, width = 8, height = 6)
 
 ```
 
