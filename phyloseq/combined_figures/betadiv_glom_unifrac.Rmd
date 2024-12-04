@@ -242,13 +242,13 @@ sample_data(physeq.prune.x)$Substrate = factor(sample_data(physeq.prune.x)$Subst
 library(MoMAColors)
 
 # Get the Warhol palette
-Warhol <- moma.colors("Warhol")
+Warhol <- moma.colors("OKeeffe")
 
 ```
 
 
 ```{r}
-pscrusttype = plot_ordination(physeq.prune.x, physeq.prune.x.SF.ord, type = "Substrate", color = "Substrate")  + theme_bw() + ggtitle("Glomeromycete Beta Diversity (PCoA) by substrate") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) + annotate("text", x = .85, y = 0.54, label = "PERMANOVA, p = 0.006")
+pscrusttype = plot_ordination(physeq.prune.x, physeq.prune.x.SF.ord, type = "Substrate", color = "Substrate")  + theme_bw() + ggtitle("Glomeromycete Beta Diversity (PCoA) by substrate") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_fill_manual(values = friendly_pal("ito_seven")) + annotate("text", x = .85, y = 0.54, label = "PERMANOVA, p = 0.006")
 
 pscrusttype
 
@@ -297,7 +297,8 @@ adonis2(ps.dist ~ Climate, as(sample_data(physeq.prune.x),"data.frame"))
 ```
 
 ```{r}
-psClimate = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Climate", color = "Climate")  + theme_bw() + ggtitle("Fungal Beta Diversity (PCoA) by Climate") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) + annotate("text", x = .5, y = 0.54, label = "PERMANOVA, p = 0.034")
+library('ggpubfigs')
+psClimate = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Climate", color = "Climate")  + theme_bw() + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = friendly_pal("contrast_three")) + annotate("text", x = .5, y = 0.54, label = "PERMANOVA, p = 0.034")
 
 psClimate
 ```
@@ -322,13 +323,11 @@ adonis2(ps.dist ~ Site, as(sample_data(physeq.prune.x),"data.frame"))
 
 physeq.prune.x.SF.ord <- ordinate(physeq.prune.x, "PCoA", "uunifrac")
 
-psSite = plot_ordination(physeq.prune.x, physeq.prune.x.SF.ord, type = "Site", color = "Site")  + theme_bw() + ggtitle("Fungal Beta Diversity (PCoA) by Site") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) + annotate("text", x = -.65, y = 0.54, label = "PERMANOVA, p = 0.044")
+psSite = plot_ordination(physeq.prune.x, physeq.prune.x.SF.ord, type = "Site", color = "Site")  + theme_bw() + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = friendly_pal("contrast_three")) + annotate("text", x = .5, y = 0.96, label = "PERMANOVA, p = 0.044") 
 
 psSite
 
 # save the plot as a png
-
-png("./figures_glom/Fungal Beta Diversity (PCoA) by Site unifrac.png", units="in", width = 8, height = 5, res = 300 )
 
 ```
 
@@ -338,6 +337,22 @@ psSite
 dev.off()
 ```
 
+
+```{r}
+library('patchwork')
+
+f <- psSite + psClimate 
+d <- f + plot_annotation(tag_levels = 'A')
+
+```
+
+```{r}
+# save as pdf with wide width
+
+pdf("./TPvsCIMAvsclimateunifrac.pdf", width = 11, height = 5)
+d
+dev.off()
+```
 
 ###Beta by plant proximity
 
