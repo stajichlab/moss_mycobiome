@@ -183,22 +183,13 @@ f + d
 
 ```{r}
 library(ggpubfigs)
-
-physeq.prune.rarefy.plot.richness.Substrate = plot_richness(
+physeq.prune.rarefy.plot.richness.Substrate2 = plot_richness(
   physeq.prune.rarefy, 
   x = "Site", 
   measures = c("Observed")
 ) + 
   geom_boxplot() + 
-  stat_compare_means(method = "anova", label.y = 25) + 
-  stat_compare_means(
-    aes(label = ..p.signif..), s
-    method = "t.test", 
-    ref.group = "TP2", 
-    label.y = 21, 
-    hide.ns = TRUE, 
-    size = 7
-  ) + 
+  stat_compare_means(method = "anova", label.y = 50, label.x = 4.5) + 
   theme_bw() + 
   theme(
     plot.title = element_text(hjust = 0.5), 
@@ -207,7 +198,8 @@ physeq.prune.rarefy.plot.richness.Substrate = plot_richness(
   ) + 
   scale_color_manual(values = "black") + 
   theme(legend.position = "none")
-physeq.prune.rarefy.plot.richness.Substrate
+
+physeq.prune.rarefy.plot.richness.Substrate2
 ```
 
 ```{r}
@@ -301,7 +293,7 @@ fish
 ```
 
 ```{r}
-pdf("./fish.pdf", width = 16, height = 16)
+pdf("./multipannelvenn.pdf", width = 16, height = 16)
 fish
 dev.off()
 ```
