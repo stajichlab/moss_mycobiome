@@ -301,7 +301,7 @@ fish
 ```
 
 ```{r}
-pdf("./fish.pdf", width = 16, height = 18)
+pdf("./fish.pdf", width = 16, height = 16)
 fish
 dev.off()
 ```
