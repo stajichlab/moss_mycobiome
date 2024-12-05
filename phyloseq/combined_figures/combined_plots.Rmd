@@ -156,15 +156,16 @@ physeq.prune.rarefy
 ```{r}
 # subset for Glomeromycotina
 physeq.prune.rarefy <- subset_taxa(physeq.prune.rarefy, Class == "Glomeromycetes")
+
 ```
 
 # venn
 ```{r}
 
-f <- ggvenn_pq(physeq.prune, fact = "Climate", label_alpha = 0, category.names = c("Coastal", "Colorado\nDesert", "Mojave Desert")) +
+f <- ggvenn_pq(physeq.prune.rarefy, fact = "Climate", label_alpha = .0, category.names = c("Coastal", "Colorado\nDesert", "Mojave Desert")) +
   ggplot2::scale_fill_distiller(palette = "BuPu", direction = 1)
 
-d <- ggvenn_pq(physeq.prune, fact = "Substrate", label_alpha = 0, category.names = c("Bare\nSoil", "Subsurface", "Surface Sterile", "Moss\nCrust")) +
+d <- ggvenn_pq(physeq.prune.rarefy, fact = "Substrate", label_alpha = 0.0, category.names = c("Bare\nSoil", "Subsurface", "Surface Sterile", "Moss\nCrust")) +
   ggplot2::scale_fill_distiller(palette = "BuPu", direction = 1)
 
 
@@ -180,8 +181,7 @@ f + d
 ```{r}
 library(ggpubfigs)
 
-physeq.prune.rarefy.plot.richness.Substrate = plot_richness(physeq.prune.rarefy, x="Substrate", color=("Substrate"), measures=c("Observed")) + geom_boxplot() + stat_compare_means(method = "anova", label.y = 25) + stat_compare_means(aes(label=..p.signif..), method = "t.test", ref.group = "Dirt", label.y = 50, hide.ns = TRUE) + theme_bw() + theme(plot.title = element_text(hjust = 0.5)) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_color_manual(values = friendly_pal("zesty_four")) 
-
+physeq.prune.rarefy.plot.richness.Substrate = plot_richness(physeq.prune.rarefy, x="Site", color=("Site"), measures=c("Observed")) + geom_boxplot() + stat_compare_means(method = "anova", label.y = 25) + stat_compare_means(aes(label=..p.signif..), method = "t.test", ref.group = "TP2", label.y = 21, hide.ns = TRUE, size = 7) + theme_bw() + theme(plot.title = element_text(hjust = 0.5)) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_color_manual(values = friendly_pal("ito_seven")) + theme(legend.position="none") 
 physeq.prune.rarefy.plot.richness.Substrate
 ```
 
@@ -255,8 +255,9 @@ tax_Substrate_class_rhodo_abundance <- plot_bar(physeq.prune.rarefy, x="Site", f
   theme_bw() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   scale_fill_manual(values = color) +  # Set high contrast colors 
-  ggtitle("Glomeromycete relative abundance by site") +
-  stat_compare_means(method = "anova", label.y = 3000) + geom_text(data=LABELS, aes(x=LABELS$Site, y = LABELS$ylabel , label = LABELS$Letters))
+  stat_compare_means(method = "anova", label.y = 3000) + geom_text(data=LABELS, aes(x=LABELS$Site, y = LABELS$ylabel , label = LABELS$Letters)) + theme(legend.position="none")
+# same plot but remove legend
+
 
   
 # Display the plot
@@ -265,7 +266,17 @@ tax_Substrate_class_rhodo_abundance
 ```
 
 ```{r}
-pdf("./Figures/Alpha_Diversity_(Chao1)_by_Substrate.pdf", width = 8, height = 5)
-physeq.prune.rarefy.plot.richness.Substrate
+
+multiplot <- f + physeq.prune.rarefy.plot.richness.Substrate + d + tax_Substrate_class_rhodo_abundance
+fish <- multiplot + plot_annotation(tag_levels = 'A')
+```
+
+```{r}
+fish
+```
+
+```{r}
+pdf("./fish.pdf", width = 16, height = 20)
+fish
 dev.off()
 ```
