@@ -1,0 +1,271 @@
+
+```{r warning=FALSE, message=FALSE}
+library(ape)
+library(vegan)
+library(dplyr)
+library(scales)
+library(grid)
+library(reshape2)
+library(phyloseq)
+library(magrittr)
+library(ggplot2)
+library(ggpubr)
+library(plyr)
+library(data.table)
+library(tidyr)
+library(tidyverse)
+library(MoMAColors)
+library(MicEco)
+library(MiscMetabar)
+library(ggVennDiagram)
+library(patchwork)
+library(multcompView)
+
+
+```
+
+# Import data
+
+###STEP2: Import Mapping file (metadate file)
+1.Check mapping file before import to R, R doesn’t seem to like sample name to start with number or contain “-” in sample name. If you get error in this step, you should check file name first.
+
+2.First column of first row should not start with #, R will not read the first row that starts with #
+
+3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
+
+```{r}
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+```
+
+If need to keep or remove some samples
+```{r}
+#meta <- meta[which(meta$Layer %in% c("Surface")),]
+```
+
+###STEP3: Check if your metadata file has been import successfully and correctly
+
+The output will show a table of your metadata file (mapping file).
+
+*If you do not have header, you might start your first row with #
+
+```{r warning=FALSE}
+head(meta)
+```
+
+###STEP4: Construct sample_data-class using imported metadata
+
+```{r}
+sampleData <- sample_data(meta)
+```
+
+###STEP5: Import OTU table
+
+OTU table from Mojave 16S data is “MC2017FC.otu_table.txt”.
+MC-Mojave Crust-2017-FC-Fungi completed
+
+```{r}
+otus <- read.table("Mojave2020_KKelly202307.otu_table.txt",header=T,sep="\t",row.names=1)
+otumat <- as(as.matrix(otus), "matrix")
+OTU = otu_table(otumat, taxa_are_rows = TRUE)
+```
+
+Check imported OTU table
+
+```{r warning=FALSE}
+head(OTU)
+```
+
+###STEP6: Import taxonomy table
+Taxonmy table generated from AMPtk need to be rearranged using following script.
+
+“perl rdp_taxonmy2mat.pl<Input_taxonmy.txt>Output_taxonomy.txt”
+
+rdp_taxonomy2mat.pl was created by Professor Jason E. Stajich
+
+```{r}
+taxmat <- read.table("Mojave2020_KKelly202307.ASVs.taxonomy.fix.txt", header=T,sep="\t",row.names=1)
+taxmat <- as(as.matrix(taxmat),"matrix")
+TAX = tax_table(taxmat)
+```
+
+###STEP7: Import phylogenetic tree
+Phylogenetic tree can also be include for further phylogenetic analysis.
+
+```{r warning=FALSE}
+#treefile = "Mojave2020_KKelly202307.ASVs.tree.phy"
+#tree = read.tree(treefile)
+```
+
+###STEP8: Construct Phyloseq object
+To construct phyloseq object, otu table, taxonomy table, and sampleData are required. Phylogenetic tree can be included, but it is not necessary for constructing phyloseq object.
+Construct Phyloseq object called "Physeq"
+
+```{r warning=FALSE}
+physeq = phyloseq(OTU,TAX,sampleData)
+```
+
+Check phyloseq object
+This should indicate that your physeq is a "phyloseq-class experiment-level object""
+
+```{r warning=FALSE}
+physeq
+```
+
+###STEP9: Remove singletons
+Remove any OTUs that present only one time.
+
+```{r }
+physeq.prune = prune_taxa(taxa_sums(physeq) > 1, physeq)
+```
+
+```{r warning=FALSE}
+physeq.prune
+```
+
+###STEP10: Plot read counts to check dataset
+Check read counts: any samples that have very low reads should be removed.
+[Ref](http://evomics.org/wp-content/uploads/2016/01/phyloseq-Lab-01-Answers.html)
+
+```{r}
+readcount = data.table(as(sample_data(physeq.prune), "data.frame"),
+                 TotalReads = sample_sums(physeq.prune), 
+                 keep.rownames = TRUE)
+setnames(readcount, "rn", "SampleID")
+
+#For plotting, use command below.
+#SeqDepth = ggplot(readcount, aes(TotalReads)) + geom_histogram() + ggtitle("Sequencing Depth")
+```
+
+TotalReads of all the samples can be in this table (select only SampleID and TotalReads columns).
+In order to check samples with low number of reads, "order()" can be used to sort "TotalReads" column.
+In this dataset, N55.Rhizo has very low number of reads, so will will filter this sample out using the next minimum number of reads.
+```{r}
+readcount = readcount[order(readcount$TotalReads), c("SampleID", "TotalReads")]
+```
+
+```{r}
+head(readcount)
+```
+
+```{r warning=FALSE}
+set.seed(1)
+physeq.prune.rarefy = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
+physeq.prune.rarefy
+```
+
+```{r}
+# subset for Glomeromycotina
+physeq.prune.rarefy <- subset_taxa(physeq.prune.rarefy, Class == "Glomeromycetes")
+```
+
+# venn
+```{r}
+
+f <- ggvenn_pq(physeq.prune, fact = "Climate", label_alpha = 0, category.names = c("Coastal", "Colorado\nDesert", "Mojave Desert")) +
+  ggplot2::scale_fill_distiller(palette = "BuPu", direction = 1)
+
+d <- ggvenn_pq(physeq.prune, fact = "Substrate", label_alpha = 0, category.names = c("Bare\nSoil", "Subsurface", "Surface Sterile", "Moss\nCrust")) +
+  ggplot2::scale_fill_distiller(palette = "BuPu", direction = 1)
+
+
+
+f + d 
+
+```
+
+
+
+# Alpha
+
+```{r}
+library(ggpubfigs)
+
+physeq.prune.rarefy.plot.richness.Substrate = plot_richness(physeq.prune.rarefy, x="Substrate", color=("Substrate"), measures=c("Observed")) + geom_boxplot() + stat_compare_means(method = "anova", label.y = 25) + stat_compare_means(aes(label=..p.signif..), method = "t.test", ref.group = "Dirt", label.y = 50, hide.ns = TRUE) + theme_bw() + theme(plot.title = element_text(hjust = 0.5)) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_color_manual(values = friendly_pal("zesty_four")) 
+
+physeq.prune.rarefy.plot.richness.Substrate
+```
+
+```{r}
+
+physeq.prune.rarefy.plot.richness.Substrate + f + d + d
+
+```
+
+
+```{r}
+sample_data(physeq.prune.rarefy.Glomeromycetes)$Site = factor(sample_data(physeq.prune.rarefy.Glomeromycetes)$Site, levels = c("CIMA", "ODLO", "AB", "GMT","TP", "TP2"))
+
+```
+
+# bar plot
+```{r}
+sums.Glomeromycetes = sample_sums(physeq.prune.rarefy)
+sums.Glomeromycetes
+z <- data.frame(sums.Glomeromycetes)
+z
+```
+
+```{r}
+
+data.anova.Glom = cbind(sample_data(physeq.prune.rarefy), sums.Glomeromycetes)
+physeq.prune.rarefy.anova.Glomeromycetes = aov(sums.Glomeromycetes
+ ~ Site, data.anova.Glom)
+summary(physeq.prune.rarefy.anova.Glomeromycetes)
+```
+
+```{r}
+tukey.ps = TukeyHSD(x=physeq.prune.rarefy.anova.Glomeromycetes, 'Site', conf.level = 0.95)
+
+generate_label_df <- function(tukey.ps, variable){
+  
+  # Extract labels and factor levels from Tukey post-hoc 
+  Tukey.levels <- tukey.ps[[variable]][,4]
+  Tukey.labels <- data.frame(multcompLetters(Tukey.levels)['Letters'])
+  
+  #I need to put the labels in the same order as in the boxplot :
+  Tukey.labels$treatment=rownames(Tukey.labels)
+  Tukey.labels=Tukey.labels[order(Tukey.labels$treatment) , ]
+  return(Tukey.labels)
+}
+
+LABELS=generate_label_df(tukey.ps, 'Site')
+names(LABELS) = c('Letters','Site')
+```
+
+```{r}
+LABELS
+```
+
+```{r}
+ylabel <- data.frame("ylabel" = c(500,500,500,500,3600, 500))
+LABELS$ylabel<-ylabel$ylabel
+Class <- data.frame("Class" = c("Glomeromycetes"))
+LABELS$Class<-Class$Class
+LABELS
+```
+
+
+
+Plot diversity
+
+```{r fig.height=5, fig.width=8, fig.align="center"}
+color <- c("black")
+tax_Substrate_class_rhodo_abundance <- plot_bar(physeq.prune.rarefy, x="Site", fill = "Class") + 
+  geom_bar(aes(color=Class, fill=Class), stat="identity", position="stack", color="transparent") +  # Set color to "transparent" to remove borders
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  scale_fill_manual(values = color) +  # Set high contrast colors 
+  ggtitle("Glomeromycete relative abundance by site") +
+  stat_compare_means(method = "anova", label.y = 3000) + geom_text(data=LABELS, aes(x=LABELS$Site, y = LABELS$ylabel , label = LABELS$Letters))
+
+  
+# Display the plot
+tax_Substrate_class_rhodo_abundance
+
+```
+
+```{r}
+pdf("./Figures/Alpha_Diversity_(Chao1)_by_Substrate.pdf", width = 8, height = 5)
+physeq.prune.rarefy.plot.richness.Substrate
+dev.off()
+```
