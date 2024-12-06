@@ -284,7 +284,7 @@ tax_Substrate_class_rhodo_abundance
 
 ```{r}
 
-multiplot <- f + physeq.prune.rarefy.plot.richness.Substrate + d + tax_Substrate_class_rhodo_abundance
+multiplot <- (f + physeq.prune.rarefy.plot.richness.Substrate2 + d + tax_Substrate_class_rhodo_abundance) + plot_layout(heights = c(0.75, 1), widths = c(1, 0.85))
 fish <- multiplot + plot_annotation(tag_levels = 'A')
 ```
 
@@ -293,7 +293,7 @@ fish
 ```
 
 ```{r}
-pdf("./multipannelvenn.pdf", width = 16, height = 16)
+pdf("./multipannelvenn3.pdf", width = 13, height = 11)
 fish
 dev.off()
 ```
