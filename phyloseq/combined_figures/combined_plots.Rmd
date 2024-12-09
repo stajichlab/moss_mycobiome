@@ -20,7 +20,7 @@ library(MiscMetabar)
 library(ggVennDiagram)
 library(patchwork)
 library(multcompView)
-
+library(ggpubfigs)
 
 ```
 
@@ -284,7 +284,7 @@ tax_Substrate_class_rhodo_abundance
 
 ```{r}
 
-multiplot <- (f + physeq.prune.rarefy.plot.richness.Substrate2 + d + tax_Substrate_class_rhodo_abundance) + plot_layout(heights = c(0.75, 1), widths = c(1, 0.85))
+multiplot <- (physeq.prune.rarefy.plot.richness.Substrate2 + tax_Substrate_class_rhodo_abundance + f + d) + plot_layout(heights = c(0.75, .95), widths = c(1, 0.85))
 fish <- multiplot + plot_annotation(tag_levels = 'A')
 ```
 
