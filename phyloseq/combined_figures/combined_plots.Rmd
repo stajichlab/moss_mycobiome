@@ -163,7 +163,9 @@ physeq.prune.rarefy <- subset_taxa(physeq.prune.rarefy, Class == "Glomeromycetes
 ```{r}
 pal <- friendly_pal("contrast_three", 50, type = "continuous")
 
-f <- ggvenn_pq(physeq.prune.rarefy, fact = "Climate", label_alpha = .0, category.names = c("Coastal", "Colorado\nDesert", "Mojave Desert")) +
+# subset samples so only surface_sterile samples are retained
+physeq.prune.rarefy_SS <- subset_samples(physeq.prune.rarefy, Substrate == "Surface Sterile")
+f <- ggvenn_pq(physeq.prune.rarefy_SS, fact = "Climate", label_alpha = .0, category.names = c("Coastal", "Colorado\nDesert", "Mojave Desert")) +
   ggplot2::scale_fill_gradientn(colors = pal) +
   ggplot2::labs(fill = "ASV\nCount")
 
