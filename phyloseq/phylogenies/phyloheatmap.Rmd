@@ -357,8 +357,8 @@ cat <- get_phylopic("23cd6aa4-9587-4a2e-8e26-de42885004c9")
 img <- pick_phylopic(name = "Glomus diaphanum", n = 1)
 
 d <- p_heatmap + add_phylopic(img, x = .05, y = 120,
-                        ysize = 25, color = "black") +  ggtitle("Glomeromycete relative abundance by site and substrate") +
-  theme(plot.title = element_text(hjust = 1.7),
+                        ysize = 25, color = "black") +
+  theme(plot.title = element_text(hjust = 1),
         legend.text = element_text(hjust = 0.5)) # Center legend text
 d
 ```
@@ -368,8 +368,8 @@ img <- pick_phylopic(name = "Glomus diaphanum", n = 1)
 ```
 
 ```{r}
-
-# Save the heatmap as a file
-ggsave("glomeromycete.png", plot = d, width = 8, height = 5)
-
+svg("./phyloheatmap.svg", width = 8, height = 5)
+d
+dev.off()
 ```
+
