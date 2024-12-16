@@ -295,7 +295,7 @@ fish
 ```
 
 ```{r}
-pdf("./multipannelvenn3.pdf", width = 13, height = 11)
+svg("./multipannelvenn.svg", width = 13, height = 11)
 fish
 dev.off()
 ```
@@ -324,7 +324,7 @@ physeq.prune.rarefy.plot.richness.Substrate2
 ```
 
 ```{r}
-pdf("./substrate_alphadiv.pdf")
+svg("./substrate_alphadiv.svg")
 physeq.prune.rarefy.plot.richness.Substrate2
 dev.off()
 ```
