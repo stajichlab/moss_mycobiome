@@ -299,3 +299,32 @@ pdf("./multipannelvenn3.pdf", width = 13, height = 11)
 fish
 dev.off()
 ```
+
+# Alpha by Substrate
+
+```{r}
+
+library(ggpubfigs)
+physeq.prune.rarefy.plot.richness.Substrate2 = plot_richness(
+  physeq.prune.rarefy, 
+  x = "Substrate", 
+  color=("Substrate"),
+  measures = c("Observed")
+) + 
+  geom_boxplot() + 
+  stat_compare_means(method = "anova", label.y = 50, label.x = 1) + 
+  theme_bw() + 
+  theme(
+    plot.title = element_text(hjust = 0.5), 
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank()
+  ) + scale_fill_manual(values = friendly_pal("zesty_four"))
+
+physeq.prune.rarefy.plot.richness.Substrate2
+```
+
+```{r}
+pdf("./substrate_alphadiv.pdf")
+physeq.prune.rarefy.plot.richness.Substrate2
+dev.off()
+```
