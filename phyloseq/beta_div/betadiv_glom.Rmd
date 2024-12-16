@@ -278,7 +278,7 @@ combo <- pssite + pscrusttype + plot_annotation(tag_levels = 'A')
 ```
 
 ```{r}
-pdf("./site_and_substrate_combined.pdf", width = 14, height = 7)
+svg("./site_and_substrate_combined.svg", width = 14, height = 7)
 combo
 dev.off()
 ```
