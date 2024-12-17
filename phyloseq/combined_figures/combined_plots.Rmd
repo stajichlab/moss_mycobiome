@@ -152,40 +152,43 @@ set.seed(1)
 physeq.prune.rarefy = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
 physeq.prune.rarefy
 ```
-
+subset for Glomeromycotina
 ```{r}
-# subset for Glomeromycotina
+
 physeq.prune.rarefy <- subset_taxa(physeq.prune.rarefy, Class == "Glomeromycetes")
 
 ```
 
-# venn
+# Venn diagrams by Climate and Substrate
+
+Create color pallette (color blind friendly) using ggpubfigs
 ```{r}
 pal <- friendly_pal("contrast_three", 50, type = "continuous")
-
-# subset samples so only surface_sterile samples are retained
-physeq.prune.rarefy_SS <- subset_samples(physeq.prune.rarefy, Substrate == "Surface Sterile")
-f <- ggvenn_pq(physeq.prune.rarefy_SS, fact = "Climate", label_alpha = .0, category.names = c("Coastal", "Colorado\nDesert", "Mojave Desert")) +
-  ggplot2::scale_fill_gradientn(colors = pal) +
-  ggplot2::labs(fill = "ASV\nCount")
-
-d <- ggvenn_pq(physeq.prune.rarefy, fact = "Substrate", label_alpha = 0.0, category.names = c("Bare\nSoil", "Moss Crust", "Subsurface", "Surface\nSterile")) +
-  ggplot2::scale_fill_gradientn(colors = pal) +
-  ggplot2::labs(fill = "ASV\nCount")
-
-f + d
-
-
-
 ```
 
+Subset samples so only surface_sterile samples are retained
+```{r}
+physeq.prune.rarefy_SS <- subset_samples(physeq.prune.rarefy, Substrate == "Surface Sterile")
+```
 
+Plot venn for climate for only surface sterilized samples
+```{r}
+Climate_venn <- ggvenn_pq(physeq.prune.rarefy_SS, fact = "Climate", label_alpha = .0, category.names = c("Coastal", "Colorado\nDesert", "Mojave Desert")) +
+  ggplot2::scale_fill_gradientn(colors = pal) +
+  ggplot2::labs(fill = "ASV\nCount")
 
-# Alpha
+```
+Plot venn for substrates
+```{r}
+Substrate_venn <- ggvenn_pq(physeq.prune.rarefy, fact = "Substrate", label_alpha = 0.0, category.names = c("Bare\nSoil", "Moss Crust", "Subsurface", "Surface\nSterile")) +
+  ggplot2::scale_fill_gradientn(colors = pal) +
+  ggplot2::labs(fill = "ASV\nCount")
+```
+
+# Alpha diversity plot
 
 ```{r}
-library(ggpubfigs)
-physeq.prune.rarefy.plot.richness.Substrate2 = plot_richness(
+alphadiversity_by_site = plot_richness(
   physeq.prune.rarefy, 
   x = "Site", 
   measures = c("Observed")
@@ -201,29 +204,23 @@ physeq.prune.rarefy.plot.richness.Substrate2 = plot_richness(
   scale_color_manual(values = "black") + 
   theme(legend.position = "none")
 
-physeq.prune.rarefy.plot.richness.Substrate2
-```
-
-```{r}
-
-physeq.prune.rarefy.plot.richness.Substrate + f + d + d
-
+alphadiversity_by_site
 ```
 
 
 ```{r}
 sample_data(physeq.prune.rarefy.Glomeromycetes)$Site = factor(sample_data(physeq.prune.rarefy.Glomeromycetes)$Site, levels = c("CIMA", "ODLO", "AB", "GMT","TP", "TP2"))
-
 ```
 
-# bar plot
+# Relative abundance bar plot with ANOVA and Tukey HSD
+Take the sum of the Glomeromycete reads for each sample and make a dataframe
 ```{r}
 sums.Glomeromycetes = sample_sums(physeq.prune.rarefy)
-sums.Glomeromycetes
-z <- data.frame(sums.Glomeromycetes)
-z
-```
 
+sums.Glomeromycetes_df <- data.frame(sums.Glomeromycetes)
+
+```
+Perform an ANOVA test on the sums of Glomeromycetes by site
 ```{r}
 
 data.anova.Glom = cbind(sample_data(physeq.prune.rarefy), sums.Glomeromycetes)
@@ -231,6 +228,7 @@ physeq.prune.rarefy.anova.Glomeromycetes = aov(sums.Glomeromycetes
  ~ Site, data.anova.Glom)
 summary(physeq.prune.rarefy.anova.Glomeromycetes)
 ```
+Perform a Tukey test on the sums of Glomeromycetes by site
 
 ```{r}
 tukey.ps = TukeyHSD(x=physeq.prune.rarefy.anova.Glomeromycetes, 'Site', conf.level = 0.95)
@@ -250,12 +248,14 @@ generate_label_df <- function(tukey.ps, variable){
 LABELS=generate_label_df(tukey.ps, 'Site')
 names(LABELS) = c('Letters','Site')
 ```
-
+Check the labels
 ```{r}
 LABELS
 ```
 
+Add Y axis coordinates to the LABELS dataframe and add the class to the LABELS dataframe
 ```{r}
+
 ylabel <- data.frame("ylabel" = c(500,500,500,500,3600, 500))
 LABELS$ylabel<-ylabel$ylabel
 Class <- data.frame("Class" = c("Glomeromycetes"))
@@ -263,40 +263,35 @@ LABELS$Class<-Class$Class
 LABELS
 ```
 
-
-
 Plot diversity
 
 ```{r fig.height=5, fig.width=8, fig.align="center"}
 color <- c("black")
-tax_Substrate_class_rhodo_abundance <- plot_bar(physeq.prune.rarefy, x="Site", fill = "Class") + 
+Glom_barplot <- plot_bar(physeq.prune.rarefy, x="Site", fill = "Class") + 
   geom_bar(aes(color=Class, fill=Class), stat="identity", position="stack", color="transparent") +  # Set color to "transparent" to remove borders
   theme_bw() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   scale_fill_manual(values = color) +  # Set high contrast colors 
   stat_compare_means(method = "anova", label.y = 3000) + geom_text(data=LABELS, aes(x=LABELS$Site, y = LABELS$ylabel , label = LABELS$Letters)) + theme(legend.position="none")
-# same plot but remove legend
 
-
-  
 # Display the plot
-tax_Substrate_class_rhodo_abundance
+Glom_barplot
 
 ```
 
 ```{r}
 
-multiplot <- (physeq.prune.rarefy.plot.richness.Substrate2 + tax_Substrate_class_rhodo_abundance + f + d) + plot_layout(heights = c(0.75, .95), widths = c(1, 0.85))
-fish <- multiplot + plot_annotation(tag_levels = 'A')
+multiplot <- (alphadiversity_by_site + Glom_barplot + Climate_venn + Substrate_venn) + plot_layout(heights = c(0.75, .95), widths = c(1, 0.85))
+multiplot_annotated <- multiplot + plot_annotation(tag_levels = 'A')
 ```
 
 ```{r}
-fish
+multiplot_annotated
 ```
 
 ```{r}
 svg("./multipannelvenn.svg", width = 13, height = 11)
-fish
+multiplot_annotated
 dev.off()
 ```
 
@@ -305,7 +300,7 @@ dev.off()
 ```{r}
 
 library(ggpubfigs)
-physeq.prune.rarefy.plot.richness.Substrate2 = plot_richness(
+alphadiv_substrate = plot_richness(
   physeq.prune.rarefy, 
   x = "Substrate", 
   color=("Substrate"),
@@ -320,11 +315,11 @@ physeq.prune.rarefy.plot.richness.Substrate2 = plot_richness(
     panel.grid.minor = element_blank()
   ) + scale_fill_manual(values = friendly_pal("zesty_four"))
 
-physeq.prune.rarefy.plot.richness.Substrate2
+alphadiv_substrate
 ```
 
 ```{r}
 svg("./substrate_alphadiv.svg")
-physeq.prune.rarefy.plot.richness.Substrate2
+alphadiv_substrate
 dev.off()
 ```
