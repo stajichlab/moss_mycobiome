@@ -1,7 +1,7 @@
 ---
-title: "Mojave_Div_ITS_phyloseq"
-author: "Kian Kelly and Nat Pombupba"
-date: "Updated on 5/24"
+title: "AMF phylogeny and heatmap"
+author: "Kian Kelly"
+date: "Updated on 12/24"
 output: html_document
 ---
 
@@ -36,7 +36,8 @@ library(treeio)
 library(devtools)
 library(MicEco)
 library(MoMAColors)
-
+library(rphylopic)
+library(cowplot)
 ```
 
 ###STEP2: Import Mapping file (metadate file)
@@ -168,34 +169,32 @@ physeq.prune.rarefy
 
 ###STEP11: Glomeromycete trees
 
+Subset taxa in phyloseq object to only include Glomeromycetes
 ```{r}
-# Subset taxa for Glomus and Rhizoglomus
 physeq.prune.rarefy.Glomeromycetes <- subset_taxa(physeq.prune.rarefy, Class == "Glomeromycetes")
 physeq.prune.rarefy.Glomeromycetes
 ```
 
-```{r}
-p1 <- plot_tree(physeq.prune.rarefy.Glomeromycetes, color="Substrate", shape="Site", label.tips="Genus", size="abundance", plot.margin=0.3)
-p1
-```
-
-```{r}
-p1 <- plot_tree(physeq.prune.rarefy.Glomeromycetes, color="Substrate", shape="Site", label.tips="Species", size="abundance", plot.margin=0.3)
-p1
-```
-
+Check the taxonomy table
 ```{r}
 
 tax_table(physeq.prune.rarefy.Glomeromycetes)
 
 ```
-
+Check the phylogenetic tree for glomeromycetes
 ```{r}
 
 phy_tree(physeq.prune.rarefy.Glomeromycetes)
 
+```
 
-
+Plot tree using phyloseq using genus as tip labels
+```{r}
+p1 <- plot_tree(physeq.prune.rarefy.Glomeromycetes, color="Substrate", shape="Site", label.tips="Genus", size="abundance", plot.margin=0.3)
+p1
+```
+Plot a test tree using ggtree
+```{r}
 # Plot the modified tree
 p2 <- ggtree(phy_tree(physeq.prune.rarefy.Glomeromycetes), layout="rectangular") +
   geom_tiplab(size=2, color="black")
@@ -203,30 +202,15 @@ p2 <- ggtree(phy_tree(physeq.prune.rarefy.Glomeromycetes), layout="rectangular")
 
 ```
 
-
+Extract species names from the taxonomy table for tip names, replace unknown species with "Unknown AMF"
 ```{r}
-#Dali <- moma.colors("Dali")
-
-# Generate a larger palette of colors
-#dali_palette <- moma.colors("Dali", n = 200)
-
-# Subset the palette to include 100 colors
-#palette_100 <- dali_palette[1:100]
-
-# Display the first few colors in the palette
-#head(palette_100)
-```
-
-
-
-```{r}
-
 # Extract species names from the taxonomy table
 species_names <- tax_table(physeq.prune.rarefy.Glomeromycetes)[, "Genus"]
-
+# replace with unknown AMF if species name is missing
 species_names[is.na(species_names)] <- "Unknown AMF"
-
-
+```
+Match phylogeny tree tips with species names from taxonomy table
+```{r}
 # Get the tip labels (ASV IDs) from the phylogenetic tree
 tip_labels <- phy_tree(physeq.prune.rarefy.Glomeromycetes)$tip.label
 
@@ -235,6 +219,7 @@ new_tip_labels <- species_names[match(tip_labels, rownames(species_names))]
 
 new_tip_labels
 ```
+Replace phylogenetic tree tip labels with species names combined with ASV number, with a space between
 ```{r}
 
 object <- phy_tree(physeq.prune.rarefy.Glomeromycetes)
@@ -248,50 +233,57 @@ object$tip.label <- new_tip_labels
 object
 ```
 
+Add color pallettes for heatmap
 ```{r}
-OKeeffe <- c("#796B58", "#1C1A18", "#D2BAA4", "#95D1E6", "#96B5BC","#BB8677","#DCD0CB", "#1D633F")
+#OKeeffe <- c("#796B58", "#1C1A18", "#D2BAA4", "#95D1E6", "#96B5BC","#BB8677","#DCD0CB", "#1D633F")
 pal <- c("forestgreen", "yellow2", "red",  "darkorange")
+```
+Based on NCBI type species from NCBI reference phylogeny (see ./NCBI_ref_phylo), name the clades
+```{r}
 # Plot the modified tree with species names as tip labels
 clades <- data.frame(node=c(182, 277, 158), Taxonomy=c("Rhizophagus", "Glomus", "Funelliformis"))
-
-
-# drop tips that are too long to be true AMF
+```
+drop tips that are too long to be true AMF
+```{r}
 to_drop <- c("ASV4995 Gigaspora", "ASV6071 Unknown AMF", "ASV7102 Gigaspora", "ASV5616 Gigaspora")
 
 pgroup <- drop.tip(object, to_drop)
+```
 
-pgroup2 <- groupClade(pgroup, c(174, 259, 150))
-
-
+Plot the tree with clade names
+```{r}
 p3 <- ggtree(pgroup, layout="rectangular") + geom_tiplab(size = 1, align = TRUE, linesize = .1, offset = .38, linetype = 0, color = "black")  +
   geom_cladelab(node=174, label="Rhizophagus", fontsize=2) +
   geom_cladelab(node=269, label="Glomus", fontsize=2) +
   geom_cladelab(node=168, label="Funelliformis", fontsize=2) +
   geom_cladelab(node=151, label="Glomus group 2", fontsize=2) + 
   geom_cladelab(node=171, label="Septoglomus", fontsize=2)
-
-
-#plot a test tree to find nodes for labeling
+  p3
+```
+Plot tree with tip labels and save (Figure S2)
+```{r}
 ptest <- ggtree(pgroup, layout="rectangular",size=1,aes(color=as.numeric(label))) +
   scale_color_gradient("Bootstrap", low = "green", high = "black", limits=c(0,1)) + 
   geom_text2(aes(subset=!isTip, 
 label=node)) +
   geom_tiplab(size=2, color="black") + theme(legend.position = "bottom")
 
-p3
 ptest
 
 ```
 
-
+Aave as png and SVG
 ```{r}
-
-# Save the heatmap as a file
 ggsave("glomeromycete_test.png", plot = ptest, width = 8, height = 5)
 #182, 277, 158 are nodes to label
 ```
 
-
+```{r}
+svg("./Supplemental_phylogeny.svg", width = 8, height = 5)
+ptest
+dev.off()
+```
+Make color pallette into color gradient
 ```{r}
 
 # Define the number of colors you want in the palette
@@ -326,7 +318,7 @@ column_names <- paste(sample_data$Substrate, sample_data$Site, sep = " ")
 colnames(otu_table) <- column_names
 #log_otu_table
 ```
-
+Create log normalized dataframe for heatmap 
 ```{r}
 
 #colnames(log_otu_table) <- make.unique(colnames(log_otu_table))
@@ -338,7 +330,7 @@ df_otu <- t(rowsum(t(df_otu), group = colnames(df_otu), na.rm = T))
 log_df_otu <- log10(df_otu + 1)
 #df_otu
 ```
-
+Plot the heatmap using ggtree
 ```{r}
 
 
@@ -349,11 +341,11 @@ p_heatmap <- gheatmap(p3, log_df_otu, width=1.3, offset=.13,
   scale_y_continuous(limits=c(-10, 149)) + theme_tree(legend.position="right") #+ geom_tiplab(size = .8, align = TRUE, #linesize = .25, offset = 1, linetype = 0, color = "grey")
 plot(p_heatmap)
 ```
-```{r}
-library(rphylopic)
-library(cowplot)
 
-cat <- get_phylopic("23cd6aa4-9587-4a2e-8e26-de42885004c9")
+Add phylopic to the plot
+```{r}
+
+#cat <- get_phylopic("23cd6aa4-9587-4a2e-8e26-de42885004c9")
 img <- pick_phylopic(name = "Glomus diaphanum", n = 1)
 
 d <- p_heatmap + add_phylopic(img, x = .05, y = 120,
@@ -362,11 +354,7 @@ d <- p_heatmap + add_phylopic(img, x = .05, y = 120,
         legend.text = element_text(hjust = 0.5)) # Center legend text
 d
 ```
-```{r}
-
-img <- pick_phylopic(name = "Glomus diaphanum", n = 1)
-```
-
+Save
 ```{r}
 svg("./phyloheatmap.svg", width = 8, height = 5)
 d
