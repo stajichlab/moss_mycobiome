@@ -1,7 +1,7 @@
 ---
-title: "Mojave_Div_ITS_phyloseq"
-author: "Nat Pombubpa"
-date: "Updated on August 7, 2019"
+title: "Unifrac beta diversity analysis for Glomeromycetes"
+author: "Kian Kelly"
+date: "Updated on 12/18/2024"
 output: html_document
 ---
 
@@ -29,7 +29,8 @@ library(data.table)
 library(tidyr)
 library(tidyverse)
 library(MoMAColors)
-
+library(ggpubfigs)
+library(patchwork)
 ```
 
 
@@ -160,229 +161,114 @@ physeq.prune.rarefy = rarefy_even_depth(physeq.prune, sample.size = 7909, replac
 physeq.prune.rarefy
 ```
 
-###STEP11: Beta diversity
+
+Subset taxa to include only Glomeromycetes in phyloseq objects
 ```{r}
 physeq.prune <- subset_taxa(physeq.prune, Class == "Glomeromycetes")
 physeq.prune.rarefy <- subset_taxa(physeq.prune.rarefy, Class == "Glomeromycetes")
+```
+Check the phyloseq objects
+```{r}
 physeq.prune 
 physeq.prune.rarefy
-
-ps.dist = phyloseq::distance(physeq.prune, "uunifrac")
 ```
 
-```{r}
-#adonis(ps.dist ~ Site*Layer*Crust_type, as(sample_data(physeq.prune),"data.frame"))
-```
+###STEP11.1: Beta diversity setup for all samples, not just moss crust and sterile moss
+Calculate unifrac distance between samples
 
-```{r}
-#adonis(ps.dist ~ Crust_type, as(sample_data(physeq.prune),"data.frame"))
-```
-
-
-
-
-
-
-###Beta by Crust type
-```{r}
-# Prune taxa with sums greater than 10
+Prune taxa with sums greater than 10
+```{r}   
 physeq.prune.x <- prune_taxa(taxa_sums(physeq.prune.rarefy) > 10, physeq.prune.rarefy)
-
-# Add a small value (e.g., 1) to the taxa sums
-#otu_table(physeq.prune.x) <- otu_table(physeq.prune.x) + 
-
-# prune the samples with zero counts
+```
+Prune the samples with zero counts
+```{r} 
 physeq.prune.x <- prune_samples(sample_sums(physeq.prune.x)>=1, physeq.prune.x)
-
-# Perform ordination
-physeq.prune.x.SF.ord <- ordinate(physeq.prune.x, "PCoA", "uunifrac")
-
+```
+Perform ordination
+```{r} 
+physeq.prune.x.ord <- ordinate(physeq.prune.x, "PCoA", "uunifrac")
 ```
 
-###Permanova Substrate
-
+###STEP11.2: Beta diversity setup for just moss crust and sterile moss
+Ordinate for "surface" samples, meaning moss crust and surface sterile moss, since we only want to compare these two substrates between sites
 ```{r}
-
-ps.dist = phyloseq::distance(physeq.prune.x, "uunifrac")
-
-adonis2(ps.dist ~ Substrate, as(sample_data(physeq.prune.x),"data.frame"))
-```
-###Beta by site ordination
-
-```{r}
-
 physeq.prune.SF <- subset_samples(physeq.prune.rarefy, Layer=="Surface")
-# Prune taxa with sums greater than 10
+# Prune taxa with sums greater than 10 
 physeq.prune.SF.x <- prune_taxa(taxa_sums(physeq.prune.SF) > 10, physeq.prune.SF)
-
-# Add a small value (e.g., 1) to the taxa sums
-#otu_table(physeq.prune.x) <- otu_table(physeq.prune.x) + 
-
 # prune the samples with zero counts
 physeq.prune.SF.x <- prune_samples(sample_sums(physeq.prune.SF.x)>=1, physeq.prune.SF.x)
-
 # Perform ordination
-physeq.prune.x.SF.ord.2 <- ordinate(physeq.prune.SF.x, "PCoA", "uunifrac")
-
+physeq.prune.x.SF.ord <- ordinate(physeq.prune.SF.x, "PCoA", "uunifrac")
 ```
-###Permanova Site
-
+Calculate uunifrac for moss crust and sterile moss crust samples as well as permanova between sites and climates
 ```{r}
-
-ps.dist2 = phyloseq::distance(physeq.prune.SF.x, "uunifrac")
-
-adonis2(ps.dist2 ~ Site, as(sample_data(physeq.prune.SF.x),"data.frame"))
+# calculate uunifrac distance for "surface" samples
+ps.dist_SF = phyloseq::distance(physeq.prune.SF.x, "uunifrac")
+# permanova between sites
+adonis2(ps.dist_SF ~ Site, as(sample_data(physeq.prune.SF.x),"data.frame"))
+# permanova between climates
+adonis2(ps.dist_SF ~ Climate, as(sample_data(physeq.prune.SF.x),"data.frame"))
 ```
-
+Factor each of the variables to be plotted
 ```{r}
+#Factor by sample type
 sample_data(physeq.prune.x)$Substrate = factor(sample_data(physeq.prune.x)$Substrate, levels = c("Moss Crust","Subsurface", "Dirt", "Surface Sterile"))
-```
-
-```{r}
-library(MoMAColors)
-
-# Get the Warhol palette
-Warhol <- moma.colors("OKeeffe")
-
-```
-
-
-```{r}
-pscrusttype = plot_ordination(physeq.prune.x, physeq.prune.x.SF.ord, type = "Substrate", color = "Substrate")  + theme_bw() + ggtitle("Glomeromycete Beta Diversity (PCoA) by substrate") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_fill_manual(values = friendly_pal("ito_seven")) + annotate("text", x = .85, y = 0.54, label = "PERMANOVA, p = 0.006")
-
-pscrusttype
-
-```
-```{r}
-png("./Figures_glom/Fungal Beta Diversity (PCoA) by Substrate unifrac.png", units="in", width = 8, height = 5, res = 300 )
-pscrusttype
-dev.off()
-```
-###Beta by Crust site
-
-```{r}
+#Factor by site
 sample_data(physeq.prune.x)$Site = factor(sample_data(physeq.prune.x)$Site, levels = c("CIMA", "AB", "ODLO", "TP", "TP2", "GMT"))
-```
-
-
-
-
-```{r}
-pssite = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Site", color = "Site")  + theme_bw() + ggtitle("Glomeromycete Beta Diversity (PCoA) by Site") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) + annotate("text", x = -.5, y = -.7, label = "PERMANOVA, p = 0.003")
-
-pssite
-```
-
-
-
-```{r}
-png("./Figures_glom/Fungal Beta Diversity (PCoA) by site unifrac.png", units="in", width = 8, height = 5, res = 300 )
-pssite
-dev.off()
-```
-
-###Beta by Climate
-
-
-
-```{r}
+#Factor by climate
 sample_data(physeq.prune.x)$Climate = factor(sample_data(physeq.prune.x)$Climate, levels = c("Mojave_Desert","Colorado_Desert", "Coastal"))
 ```
 
-```{r}
-# permanova climate
-ps.dist = phyloseq::distance(physeq.prune.x, "uunifrac")
+###STEP11.3: Beta diversity (uunifrac) plot by climate for just moss crust and sterile moss
 
-adonis2(ps.dist ~ Climate, as(sample_data(physeq.prune.x),"data.frame"))
+Calculate permanova for unifrac by climate in only "surface" samples
+```{r}
+ps.dist_SF = phyloseq::distance(physeq.prune.SF.x, "uunifrac")
+
+adonis2(ps.dist_SF ~ Climate, as(sample_data(physeq.prune.SF.x),"data.frame"))
 ```
-
+Plot "surface" samples by climate for unifrac. Note that the permanova statistic is hard coded, you need to adjust based on result of previous block
 ```{r}
-library('ggpubfigs')
-psClimate = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Climate", color = "Climate")  + theme_bw() + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = friendly_pal("contrast_three")) + annotate("text", x = .5, y = 0.54, label = "PERMANOVA, p = 0.034")
+psClimate = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord, type = "Climate", color = "Climate")  + theme_bw() + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = friendly_pal("contrast_three")) + annotate("text", x = .5, y = 0.54, label = "PERMANOVA, p = 0.088")
 
 psClimate
 ```
 
-
-
+###STEP11.4: Beta diversity plot by climate for just moss crust and sterile moss at CIMA and TP (same species, T. australaceae)
 ```{r}
-pdf("./Figures_glom/Fungal Beta Diversity (PCoA) by Climate unifrac.pdf")
-psClimate
-dev.off()
+# subset to include only "Surface" samples from CIMA and TP
+physeq.prune.x.trichostomopsis <- subset_samples(physeq.prune.SF.x, Site %in% c("CIMA", "TP"))
+# subset to include only "Surface" samples from CIMA and TP
+ps.dist = phyloseq::distance(physeq.prune.x.trichostomopsis, "uunifrac")
+# calculate permanova for unifrac by climate in CIMA and TP
+adonis2(ps.dist ~ Site, as(sample_data(physeq.prune.x.trichostomopsis),"data.frame"))
 ```
 
-###Beta with only CIMA and TP1
+Plot the uunifrac beta diversity in moss samples from CIMA and TP by climate.
 ```{r}
-physeq.prune.x <- subset_samples(physeq.prune.SF.x, Site %in% c("CIMA", "TP"))
-
-ps.dist = phyloseq::distance(physeq.prune.x, "uunifrac")
-
-adonis2(ps.dist ~ Site, as(sample_data(physeq.prune.x),"data.frame"))
-
 # plot
+physeq.prune.x.SF.ord.trichostomopsis <- ordinate(physeq.prune.x.trichostomopsis, "PCoA", "uunifrac")
 
-physeq.prune.x.SF.ord <- ordinate(physeq.prune.x, "PCoA", "uunifrac")
-
-psSite = plot_ordination(physeq.prune.x, physeq.prune.x.SF.ord, type = "Site", color = "Site")  + theme_bw() + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = friendly_pal("contrast_three")) + annotate("text", x = .5, y = 0.96, label = "PERMANOVA, p = 0.044") 
+psSite = plot_ordination(physeq.prune.x.trichostomopsis, physeq.prune.x.SF.ord.trichostomopsis, type = "Site", color = "Site")  + theme_bw() + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = friendly_pal("contrast_three")) + annotate("text", x = .5, y = 0.96, label = "PERMANOVA, p = 0.044") 
 
 psSite
 
-# save the plot as a png
-
 ```
-
 ```{r}
-pdf("./TPvsCIMAunifrac.pdf")
-psSite
-dev.off()
-```
 
-
-```{r}
-library('patchwork')
-
-f <- psSite + psClimate 
-d <- f + plot_annotation(tag_levels = 'A')
+Combined_plot <- psSite + psClimate 
+Combined_plot_annotated <- Combined_plot + plot_annotation(tag_levels = 'A')
 
 ```
 
 ```{r}
 # save as pdf with wide width
-
 pdf("./TPvsCIMAvsclimateunifrac.pdf", width = 11, height = 5)
-d
+Combined_plot_annotated
 dev.off()
 ```
 
-###Beta by plant proximity
-
-```{r}
-sample_data(physeq.prune.x)$Near_plant = factor(sample_data(physeq.prune.x)$Near_plant, levels = c("Near_Plant","Not_Near"))
-```
-
-```{r}
-# permanova climate
-ps.dist = phyloseq::distance(physeq.prune.x, "uunifrac")
-
-adonis2(ps.dist ~ Near_plant, as(sample_data(physeq.prune.x),"data.frame"))
-```
-
-
-```{r}
-psPlant= plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Near_plant", color = "Near_plant")  + theme_bw() + ggtitle("Fungal Beta Diversity (PCoA) by plant proximity") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) 
-
-psPlant
-```
-
-
-```{r}
-pdf("./Figures_glom/Fungal Beta Diversity (PCoA) by Plant Proximity unifrac.pdf")
-psPlant
-dev.off()
-```
-
-
-# add stats 
+###STEP23: Beta diversity plot by climate for just moss crust and sterile moss at CIMA and TP (same species, T. australaceae)
 
 ```{r}
 physeq.prune.x <- subset_samples(physeq.prune.x, moss_or_soil %in% c("Dirt", "Moss Crust"))
