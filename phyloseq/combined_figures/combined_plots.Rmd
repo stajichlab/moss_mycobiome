@@ -1,4 +1,4 @@
-
+ 
 ```{r warning=FALSE, message=FALSE}
 library(ape)
 library(vegan)
@@ -158,7 +158,10 @@ subset for Glomeromycotina
 physeq.prune.rarefy <- subset_taxa(physeq.prune.rarefy, Class == "Glomeromycetes")
 
 ```
-
+Create a varaible for glomeromycetes in only "surface" samples, meaning moss crust and surface sterile crust
+```{r}
+physeq.prune.rarefy.SF <- subset_samples(physeq.prune.rarefy, Layer == "Surface")
+```
 # Venn diagrams by Climate and Substrate
 
 Create color pallette (color blind friendly) using ggpubfigs
@@ -185,11 +188,11 @@ Substrate_venn <- ggvenn_pq(physeq.prune.rarefy, fact = "Substrate", label_alpha
   ggplot2::labs(fill = "ASV\nCount")
 ```
 
-# Alpha diversity plot
+# Alpha diversity plot for "surface" samples, meaning surface sterile and moss crust samples
 
 ```{r}
 alphadiversity_by_site = plot_richness(
-  physeq.prune.rarefy, 
+  physeq.prune.rarefy.SF, 
   x = "Site", 
   measures = c("Observed")
 ) + 
@@ -212,10 +215,10 @@ alphadiversity_by_site
 sample_data(physeq.prune.rarefy.Glomeromycetes)$Site = factor(sample_data(physeq.prune.rarefy.Glomeromycetes)$Site, levels = c("CIMA", "ODLO", "AB", "GMT","TP", "TP2"))
 ```
 
-# Relative abundance bar plot with ANOVA and Tukey HSD
+# Relative abundance bar plot with ANOVA and Tukey HSD for "surface" samples (meaning moss crust and surface sterile moss crust)
 Take the sum of the Glomeromycete reads for each sample and make a dataframe
 ```{r}
-sums.Glomeromycetes = sample_sums(physeq.prune.rarefy)
+sums.Glomeromycetes = sample_sums(physeq.prune.rarefy.SF)
 
 sums.Glomeromycetes_df <- data.frame(sums.Glomeromycetes)
 
@@ -223,7 +226,7 @@ sums.Glomeromycetes_df <- data.frame(sums.Glomeromycetes)
 Perform an ANOVA test on the sums of Glomeromycetes by site
 ```{r}
 
-data.anova.Glom = cbind(sample_data(physeq.prune.rarefy), sums.Glomeromycetes)
+data.anova.Glom = cbind(sample_data(physeq.prune.rarefy.SF), sums.Glomeromycetes)
 physeq.prune.rarefy.anova.Glomeromycetes = aov(sums.Glomeromycetes
  ~ Site, data.anova.Glom)
 summary(physeq.prune.rarefy.anova.Glomeromycetes)
@@ -256,7 +259,7 @@ LABELS
 Add Y axis coordinates to the LABELS dataframe and add the class to the LABELS dataframe
 ```{r}
 
-ylabel <- data.frame("ylabel" = c(500,500,500,500,3600, 500))
+ylabel <- data.frame("ylabel" = c(500,500,500,500,1900, 500))
 LABELS$ylabel<-ylabel$ylabel
 Class <- data.frame("Class" = c("Glomeromycetes"))
 LABELS$Class<-Class$Class
@@ -267,18 +270,18 @@ Plot diversity
 
 ```{r fig.height=5, fig.width=8, fig.align="center"}
 color <- c("black")
-Glom_barplot <- plot_bar(physeq.prune.rarefy, x="Site", fill = "Class") + 
+Glom_barplot <- plot_bar(physeq.prune.rarefy.SF, x="Site", fill = "Class") + 
   geom_bar(aes(color=Class, fill=Class), stat="identity", position="stack", color="transparent") +  # Set color to "transparent" to remove borders
   theme_bw() +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   scale_fill_manual(values = color) +  # Set high contrast colors 
-  stat_compare_means(method = "anova", label.y = 3000) + geom_text(data=LABELS, aes(x=LABELS$Site, y = LABELS$ylabel , label = LABELS$Letters)) + theme(legend.position="none")
+  stat_compare_means(method = "anova", label.y = 1800) + geom_text(data=LABELS, aes(x=LABELS$Site, y = LABELS$ylabel , label = LABELS$Letters)) + theme(legend.position="none")
 
 # Display the plot
 Glom_barplot
 
 ```
-
+Make a multipannel plot using Patchwork
 ```{r}
 
 multiplot <- (alphadiversity_by_site + Glom_barplot + Climate_venn + Substrate_venn) + plot_layout(heights = c(0.75, .95), widths = c(1, 0.85))
@@ -317,7 +320,7 @@ alphadiv_substrate = plot_richness(
 
 alphadiv_substrate
 ```
-
+Save as an SVG
 ```{r}
 svg("./substrate_alphadiv.svg")
 alphadiv_substrate
