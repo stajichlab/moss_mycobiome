@@ -176,7 +176,7 @@ physeq.prune.rarefy
 ###STEP11.1: Beta diversity setup for all samples, not just moss crust and sterile moss
 Calculate unifrac distance between samples
 
-Prune taxa with sums greater than 10
+Prune taxa with sums less than 10, since we want to reduce noise
 ```{r}   
 physeq.prune.x <- prune_taxa(taxa_sums(physeq.prune.rarefy) > 10, physeq.prune.rarefy)
 ```
@@ -246,38 +246,41 @@ adonis2(ps.dist ~ Site, as(sample_data(physeq.prune.x.trichostomopsis),"data.fra
 
 Plot the uunifrac beta diversity in moss samples from CIMA and TP by climate.
 ```{r}
-# plot
+# ordinate diversity for only TP and cima surface samples
 physeq.prune.x.SF.ord.trichostomopsis <- ordinate(physeq.prune.x.trichostomopsis, "PCoA", "uunifrac")
-
+# plot diversity for only TP and cima surface samples
 psSite = plot_ordination(physeq.prune.x.trichostomopsis, physeq.prune.x.SF.ord.trichostomopsis, type = "Site", color = "Site")  + theme_bw() + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = friendly_pal("contrast_three")) + annotate("text", x = .5, y = 0.96, label = "PERMANOVA, p = 0.044") 
 
 psSite
 
 ```
+
+Make a combined plot
 ```{r}
 
 Combined_plot <- psSite + psClimate 
 Combined_plot_annotated <- Combined_plot + plot_annotation(tag_levels = 'A')
 
 ```
-
+Save as an SVG file
 ```{r}
-# save as pdf with wide width
-pdf("./TPvsCIMAvsclimateunifrac.pdf", width = 11, height = 5)
+svg("./TPvsCIMAvsclimateunifrac.svg", width = 11, height = 5)
 Combined_plot_annotated
 dev.off()
 ```
 
-###STEP23: Beta diversity plot by climate for just moss crust and sterile moss at CIMA and TP (same species, T. australaceae)
+####Add some statistics for the results section
 
+Difference in beta div for soil vs moss crust
 ```{r}
+
 physeq.prune.x <- subset_samples(physeq.prune.x, moss_or_soil %in% c("Dirt", "Moss Crust"))
 
 ps.dist = phyloseq::distance(physeq.prune.x, "bray")
 
 adonis2(ps.dist ~ moss_or_soil, as(sample_data(physeq.prune.x),"data.frame"))
 ```
-
+Difference in beta div for surface sterile vs moss crust
 ```{r}
 physeq.prune.x <- subset_samples(physeq.prune.x, Substrate %in% c("Surface Sterile", "Moss Crust"))
 
@@ -285,7 +288,7 @@ ps.dist = phyloseq::distance(physeq.prune.x, "bray")
 
 adonis2(ps.dist ~ Substrate, as(sample_data(physeq.prune.x),"data.frame"))
 ```
-
+Difference in beta div for surface sterile vs moss crust
 ```{r}
 physeq.prune.x <- subset_samples(physeq.prune.x, Substrate %in% c("Surface Sterile", "Moss Crust"))
 
