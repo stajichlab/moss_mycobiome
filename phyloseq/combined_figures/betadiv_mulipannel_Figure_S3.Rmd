@@ -1,0 +1,301 @@
+---
+title: "Mojave_Div_ITS_phyloseq"
+author: "Nat Pombubpa"
+date: "Updated on August 7, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###STEP1: Load all necessary packages for analysis
+More information about Phyloseq can be found at the following link: [Phyloseq](https://joey711.github.io/phyloseq/)
+If you get error in this step, you probably need to install any packages which causes error.
+
+```{r warning=FALSE, message=FALSE}
+library(ape)
+library(vegan)
+library(dplyr)
+library(scales)
+library(grid)
+library(reshape2)
+library(phyloseq)
+library(magrittr)
+library(ggplot2)
+library(ggpubr)
+library(plyr)
+library(data.table)
+library(tidyr)
+library(tidyverse)
+library(MoMAColors)
+
+```
+
+
+###STEP2: Import Mapping file (metadate file)
+1.Check mapping file before import to R, R doesn’t seem to like sample name to start with number or contain “-” in sample name. If you get error in this step, you should check file name first.
+
+2.First column of first row should not start with #, R will not read the first row that starts with #
+
+3. You can choose which samples to include in analysis by indicating "KEEP" in Description column
+
+```{r}
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+```
+
+If need to keep or remove some samples
+```{r}
+#meta <- meta[which(meta$Layer %in% c("Surface")),]
+```
+
+###STEP3: Check if your metadata file has been import successfully and correctly
+
+The output will show a table of your metadata file (mapping file).
+
+*If you do not have header, you might start your first row with #
+
+```{r warning=FALSE}
+head(meta)
+```
+
+###STEP4: Construct sample_data-class using imported metadata
+
+```{r}
+sampleData <- sample_data(meta)
+```
+
+###STEP5: Import OTU table
+
+OTU table from Mojave 16S data is “MC2017FC.otu_table.txt”.
+MC-Mojave Crust-2017-FC-Fungi completed
+
+```{r}
+otus <- read.table("Mojave2020_KKelly202307.otu_table.txt",header=T,sep="\t",row.names=1)
+otumat <- as(as.matrix(otus), "matrix")
+OTU = otu_table(otumat, taxa_are_rows = TRUE)
+```
+
+Check imported OTU table
+
+```{r warning=FALSE}
+head(OTU)
+```
+
+###STEP6: Import taxonomy table
+Taxonmy table generated from AMPtk need to be rearranged using following script.
+
+“perl rdp_taxonmy2mat.pl<Input_taxonmy.txt>Output_taxonomy.txt”
+
+rdp_taxonomy2mat.pl was created by Professor Jason E. Stajich
+
+```{r}
+taxmat <- read.table("Mojave2020_KKelly202307.ASVs.taxonomy.fix.txt", header=T,sep="\t",row.names=1)
+taxmat <- as(as.matrix(taxmat),"matrix")
+TAX = tax_table(taxmat)
+```
+
+###STEP7: Import phylogenetic tree
+Phylogenetic tree can also be include for further phylogenetic analysis.
+
+```{r warning=FALSE}
+treefile = "Mojave2020_KKelly202307.ASVs.tree.phy"
+tree = read.tree(treefile)
+```
+
+###STEP8: Construct Phyloseq object
+To construct phyloseq object, otu table, taxonomy table, and sampleData are required. Phylogenetic tree can be included, but it is not necessary for constructing phyloseq object.
+Construct Phyloseq object called "Physeq"
+
+```{r warning=FALSE}
+physeq = phyloseq(OTU,TAX,sampleData,tree)
+```
+
+Check phyloseq object
+This should indicate that your physeq is a "phyloseq-class experiment-level object""
+
+```{r warning=FALSE}
+physeq
+```
+
+###STEP9: Remove singletons
+Remove any OTUs that present only one time.
+
+```{r }
+physeq.prune = prune_taxa(taxa_sums(physeq) > 1, physeq)
+```
+
+```{r warning=FALSE}
+physeq.prune
+```
+
+###STEP10: Plot read counts to check dataset
+Check read counts: any samples that have very low reads should be removed.
+[Ref](http://evomics.org/wp-content/uploads/2016/01/phyloseq-Lab-01-Answers.html)
+
+```{r}
+readcount = data.table(as(sample_data(physeq.prune), "data.frame"),
+                 TotalReads = sample_sums(physeq.prune), 
+                 keep.rownames = TRUE)
+setnames(readcount, "rn", "SampleID")
+
+#For plotting, use command below.
+#SeqDepth = ggplot(readcount, aes(TotalReads)) + geom_histogram() + ggtitle("Sequencing Depth")
+```
+
+TotalReads of all the samples can be in this table (select only SampleID and TotalReads columns).
+In order to check samples with low number of reads, "order()" can be used to sort "TotalReads" column.
+In this dataset, N55.Rhizo has very low number of reads, so will will filter this sample out using the next minimum number of reads.
+```{r}
+readcount = readcount[order(readcount$TotalReads), c("SampleID", "TotalReads")]
+```
+
+```{r}
+head(readcount)
+```
+
+```{r warning=FALSE}
+set.seed(1)
+physeq.prune.rarefy = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
+physeq.prune.rarefy
+```
+
+###STEP11: Beta diversity
+```{r}
+physeq.prune <- subset_taxa(physeq.prune, Class == "Glomeromycetes")
+physeq.prune.rarefy <- subset_taxa(physeq.prune.rarefy, Class == "Glomeromycetes")
+physeq.prune 
+physeq.prune.rarefy
+
+ps.dist = phyloseq::distance(physeq.prune, "uunifrac")
+```
+
+```{r}
+#adonis(ps.dist ~ Site*Layer*Crust_type, as(sample_data(physeq.prune),"data.frame"))
+```
+
+```{r}
+#adonis(ps.dist ~ Crust_type, as(sample_data(physeq.prune),"data.frame"))
+```
+
+
+
+
+
+
+###Beta by Crust type
+```{r}
+# Prune taxa with sums greater than 10
+physeq.prune.x <- prune_taxa(taxa_sums(physeq.prune.rarefy) > 10, physeq.prune.rarefy)
+
+# Add a small value (e.g., 1) to the taxa sums
+#otu_table(physeq.prune.x) <- otu_table(physeq.prune.x) + 
+
+# prune the samples with zero counts
+physeq.prune.x <- prune_samples(sample_sums(physeq.prune.x)>=1, physeq.prune.x)
+
+# Perform ordination
+physeq.prune.x.SF.ord <- ordinate(physeq.prune.x, "PCoA", "uunifrac")
+
+```
+
+###Permanova Substrate
+
+```{r}
+
+ps.dist = phyloseq::distance(physeq.prune.x, "bray")
+
+adonis2(ps.dist ~ Substrate, as(sample_data(physeq.prune.x),"data.frame"))
+```
+###Beta by site ordination
+
+```{r}
+
+physeq.prune.SF <- subset_samples(physeq.prune.rarefy, Layer=="Surface")
+# Prune taxa with sums greater than 10
+physeq.prune.SF.x <- prune_taxa(taxa_sums(physeq.prune.SF) > 10, physeq.prune.SF)
+
+# Add a small value (e.g., 1) to the taxa sums
+#otu_table(physeq.prune.x) <- otu_table(physeq.prune.x) + 
+
+# prune the samples with zero counts
+physeq.prune.SF.x <- prune_samples(sample_sums(physeq.prune.SF.x)>=1, physeq.prune.SF.x)
+
+# Perform ordination
+physeq.prune.x.SF.ord.2 <- ordinate(physeq.prune.SF.x, "PCoA", "uunifrac")
+
+```
+###Permanova Site
+
+```{r}
+
+ps.dist2 = phyloseq::distance(physeq.prune.SF.x, "uunifrac")
+
+adonis2(ps.dist2 ~ Site, as(sample_data(physeq.prune.SF.x),"data.frame"))
+```
+
+```{r}
+sample_data(physeq.prune.x)$Substrate = factor(sample_data(physeq.prune.x)$Substrate, levels = c("Moss Crust","Subsurface", "Dirt", "Surface Sterile"))
+```
+
+```{r}
+
+# Get the Warhol palette
+Warhol <- moma.colors("Warhol")
+
+```
+
+
+```{r}
+pscrusttype = plot_ordination(physeq.prune.x, physeq.prune.x.SF.ord, type = "Substrate", color = "Substrate")  + theme_bw() + ggtitle("Glomeromycete Beta Diversity (PCoA) by substrate") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) + annotate("text", x = 1, y = 0.54, label = "PERMANOVA, p = 0.006")
+
+pscrusttype
+
+```
+```{r}
+png("./Figures_glom/Fungal Beta Diversity (PCoA) by Substrate.png", units="in", width = 8, height = 5, res = 300 )
+pscrusttype
+dev.off()
+```
+###Beta by Crust site
+
+```{r}
+sample_data(physeq.prune.x)$Site = factor(sample_data(physeq.prune.x)$Site, levels = c("CIMA", "AB", "ODLO", "TP", "TP2", "GMT"))
+```
+
+
+
+
+```{r}
+pssite = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Site", color = "Site")  + theme_bw() + ggtitle("Glomeromycete Beta Diversity (PCoA) by Site") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) + annotate("text", x = -.5, y = -.7, label = "PERMANOVA, p = 0.003")
+
+pssite
+```
+
+
+
+```{r}
+png("./Figures_glom/Fungal Beta Diversity (PCoA) by site.png", units="in", width = 8, height = 5, res = 300 )
+pssite
+dev.off()
+```
+
+###Beta by Climate
+
+
+
+```{r}
+sample_data(physeq.prune.x)$Climate = factor(sample_data(physeq.prune.x)$Climate, levels = c("Mojave_Desert","Colorado_Desert", "Coastal"))
+```
+
+```{r}
+psClimate = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Climate", color = "Climate")  + theme_bw() + ggtitle("Fungal Beta Diversity (PCoA) by Climate") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) 
+
+psClimate
+```
+
+```{r}
+pdf("./Figures_glom/Fungal Beta Diversity (PCoA) by Climate.pdf")
+psClimate
+dev.off()
+```
