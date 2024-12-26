@@ -50,3 +50,11 @@ plot(p1)
 # Save the plot to an image file
 ggsave("NCBIreftree.png", p1, width = 25, height = 25)
 ```
+
+
+```{r}
+# save the plot to an svg file
+svg("./NCBIreftree.svg", width = 25, height = 25)
+p1
+dev.off()
+```
