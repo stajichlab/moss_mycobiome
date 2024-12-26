@@ -326,3 +326,9 @@ svg("./substrate_alphadiv.svg")
 alphadiv_substrate
 dev.off()
 ```
+Save as pdf
+```{r}
+pdf("./substrate_alphadiv.pdf")
+alphadiv_substrate
+dev.off()
+```
