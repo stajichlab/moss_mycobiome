@@ -1,7 +1,7 @@
 ---
-title: "Mojave_Div_ITS_phyloseq"
-author: "Nat Pombubpa"
-date: "Updated on August 7, 2019"
+title: "Multipannel Beta Diversity Analysis of Glomeromycetes"
+author: "Kian Kelly"
+date: "Updated on 12/23/24 by Kian Kelly, Merry Christmas!"
 output: html_document
 ---
 
@@ -250,21 +250,13 @@ Warhol <- friendly_pal("ito_seven")
 pscrusttype = plot_ordination(physeq.prune.x, physeq.prune.x.SF.ord, type = "Substrate", color = "Substrate")  + theme_bw() + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) + annotate("text", x = 1, y = 0.54, label = "PERMANOVA, p = 0.006")
 
 pscrusttype
+```
 
-```
-```{r}
-png("./Figures_glom/Fungal Beta Diversity (PCoA) by Substrate.png", units="in", width = 8, height = 5, res = 300 )
-pscrusttype
-dev.off()
-```
-###Beta by Crust site
+###Beta by  site
 
 ```{r}
 sample_data(physeq.prune.x)$Site = factor(sample_data(physeq.prune.x)$Site, levels = c("CIMA", "AB", "ODLO", "TP", "TP2", "GMT"))
 ```
-
-
-
 
 ```{r}
 pssite = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Site", color = "Site")  + theme_bw() + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) + annotate("text", x = -.5, y = -.7, label = "PERMANOVA, p = 0.003")
@@ -276,56 +268,15 @@ pssite
 library('patchwork')
 combo <- pssite + pscrusttype + plot_annotation(tag_levels = 'A')
 ```
-
+SVG image
 ```{r}
 svg("./site_and_substrate_combined.svg", width = 14, height = 7)
 combo
 dev.off()
 ```
-
+pdf image
 ```{r}
-png("./Figures_glom/Fungal Beta Diversity (PCoA) by site.png", units="in", width = 8, height = 5, res = 300 )
-pssite
+pdf("./site_and_substrate_combined.pdf", width = 14, height = 7)
+combo
 dev.off()
 ```
-
-###Beta by Climate
-
-
-
-```{r}
-sample_data(physeq.prune.x)$Climate = factor(sample_data(physeq.prune.x)$Climate, levels = c("Mojave_Desert","Colorado_Desert", "Coastal"))
-```
-
-```{r}
-psClimate = plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Climate", color = "Climate")  + theme_bw() + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) 
-
-psClimate
-```
-
-```{r}
-pdf("./Figures_glom/Fungal Beta Diversity (PCoA) by Climate.pdf")
-psClimate
-dev.off()
-```
-
-###Beta by plant proximity
-
-```{r}
-sample_data(physeq.prune.x)$Near_plant = factor(sample_data(physeq.prune.x)$Near_plant, levels = c("Near_Plant","Not_Near"))
-```
-
-
-```{r}
-psPlant= plot_ordination(physeq.prune.SF.x, physeq.prune.x.SF.ord.2, type = "Near_plant", color = "Near_plant")  + theme_bw() + ggtitle("Fungal Beta Diversity (PCoA) by plant proximity") + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Warhol) 
-
-psPlant
-```
-
-```{r}
-pdf("./Figures_glom/Fungal Beta Diversity (PCoA) by Plant Proximity.pdf")
-psPlant
-dev.off()
-```
-
-
