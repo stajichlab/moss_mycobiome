@@ -394,7 +394,7 @@ combined
 ```
 
 ```{r}
-svg("./multipannelvenn.svg", width = 13, height = 11)
+png("./multipannelvenn.png", width = 16, height = 12, units = "in", res = 600)
 combined 
 dev.off()
 ```
