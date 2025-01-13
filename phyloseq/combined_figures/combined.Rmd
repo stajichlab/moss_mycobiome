@@ -1,0 +1,409 @@
+---
+title: "Mojave_Colorado_Div_ITS_phyloseq"
+author: "Kian Kelly"
+date: "Updated on December 21, 2023"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+###STEP1: Load all necessary packages
+
+```{r warning=FALSE, message=FALSE}
+library(ape)
+library(vegan)
+library(dplyr)
+library(scales)
+library(grid)
+library(reshape2)
+library(phyloseq)
+library(magrittr)
+library(ggplot2)
+library(ggpubr)
+library(plyr)
+library(data.table)
+library(tidyr)
+library(tidyverse)
+library(multcompView)
+library(MoMAColors)
+library(patchwork)
+
+```
+
+###STEP2: Import Mapping file (metadate file) 
+
+Kian notes:
+
+I excluded Nat's samples from this analysis by removing them from the metadata file. 
+
+```{r}
+meta = read.table("metadata.tsv",header=TRUE,row.names=1,sep="\t",stringsAsFactors=FALSE)
+```
+
+###STEP3: Check if your metadata file has been imported successfully 
+
+```{r warning=FALSE}
+head(meta)
+```
+
+###STEP4: Construct sample_data-class using imported metadata
+
+Kian notes: basically makes a phyloseq version of your metadata file
+```{r}
+sampleData <- sample_data(meta)
+```
+
+###STEP5: Import OTU table
+Kian notes: OTU table here combines my data with Nat's.
+NOTE: IF THE HEADER IS IMPROPERLY READ, REMOVE THE COMMA ADDED BY PHYLOSEQ!!!
+```{r}
+getwd()
+otus <- read.table("Mojave2020_KKelly202307.otu_table.txt",header=T,sep="\t",row.names=1)
+otumat <- as(as.matrix(otus), "matrix")
+OTU = otu_table(otumat, taxa_are_rows = TRUE)
+```
+
+Check imported OTU table
+
+```{r warning=FALSE}
+head(OTU)
+```
+
+###STEP6: Import taxonomy table Taxonmy 
+Note: table generated from AMPtk needs to be rearranged using a perl script.
+
+"perl rdp_taxonmy2mat.pl\<Input_taxonmy.txt\>Output_taxonomy.txt"
+
+rdp_taxonomy2mat.pl was created by Professor Jason E. Stajich
+
+```{r}
+taxmat <- read.table("Mojave2020_KKelly202307.ASVs.taxonomy.fix.txt", header=T,sep="\t",row.names=1)
+taxmat <- as(as.matrix(taxmat),"matrix")
+TAX = tax_table(taxmat)
+head(TAX)
+```
+
+###STEP7: Import phylogenetic tree
+
+```{r warning=FALSE}
+#treefile = "Mojave2020_KKelly202307.ASVs.tree.phy"
+#tree = read.tree(treefile)
+```
+
+###STEP8: Construct Phyloseq object 
+
+To construct phyloseq object, otu
+table, taxonomy table, and sampleData are required. Phylogenetic tree
+can be included, but it is not necessary for constructing phyloseq
+object. Construct Phyloseq object called "Physeq"
+
+```{r warning=FALSE}
+sample_names(OTU)
+sample_names(TAX)
+sample_names(sampleData)
+
+
+physeq = phyloseq(OTU,TAX,sampleData)
+```
+
+Check phyloseq object This should indicate that your physeq is a
+"phyloseq-class experiment-level object""
+
+```{r warning=FALSE}
+physeq
+```
+
+###STEP9: Remove singletons Remove any OTUs that present only one time.
+
+```{r }
+physeq.prune = prune_taxa(taxa_sums(physeq) > 1, physeq)
+```
+
+```{r warning=FALSE}
+physeq.prune
+```
+```{r}
+readcount = readcount[order(readcount$TotalReads), c("SampleID", "TotalReads")]
+```
+
+```{r}
+head(readcount)
+```
+
+The following code rarefys the data. Make sure the sample size is equal to the sample with the lowest read count. 
+```{r warning=FALSE}
+set.seed(1)
+physeq.prune.rarefy = rarefy_even_depth(physeq.prune, sample.size = 7909, replace = FALSE, trimOTUs = FALSE)
+physeq.prune.rarefy
+```
+
+```{r}
+physeq.prune.rarefy.SF = subset_samples(physeq.prune.rarefy, Layer=="Surface")
+```
+
+# Observed alpha diversity
+```{r}
+physeq.prune.rarefy.plot.richness.Site = plot_richness(physeq.prune.rarefy.SF, x="Site", color=("Site"), measures=c("Observed")) + geom_boxplot(lwd=0.5) + stat_compare_means(method = "anova", label.y = 1500) + theme(plot.title = element_text(hjust = 0.5)) + geom_text(data=LABELS, aes(x=LABELS$Site, y = LABELS$ylabel , label = LABELS$Letters)) + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_color_manual(values = Dali) 
+physeq.prune.rarefy.plot.richness.Site
+```
+
+# Black yeast
+```{r}
+physeq.prune.rarefy.black = subset_taxa(physeq.prune.rarefy, Order=="Chaetothyriales" | Order=="Capnodiales" | Order=="Dothideales" | Order=="Pleosporales" )
+physeq.prune.rarefy.black
+```
+
+```{r}
+physeq.prune.rarefy.SF.black = subset_samples(physeq.prune.rarefy.black, Layer=="Surface")
+```
+
+##Make taxonomy table into a matrix and relabel NA as unknown
+```{r}
+tax.fun <- as(tax_table(physeq.prune.rarefy.SF.black),"matrix")
+head(tax.fun)
+tax.fun[is.na(tax.fun)] <- "Unknown"
+head(tax.fun)
+```
+
+###Convert tax table back to phyloseq object and generate phyloseq object with new tax table
+```{r}
+TAX.fun <- tax_table(tax.fun)
+fun.3 <- phyloseq(sample_data(physeq.prune.rarefy.SF.black),otu_table(physeq.prune.rarefy.SF.black),TAX.fun)
+fun.3
+```
+
+```{r}
+glom.fun <- tax_glom(fun.3,taxrank = "Genus")
+glom.fun
+```
+
+```{r}
+tax_table(glom.fun)
+```
+
+##Transform OTU table to show relative abundance
+##Samples can also be merged together by a variable in the mapping file
+
+```{r}
+fun.abund <- merge_samples(glom.fun, "Site")
+sample_data(fun.abund)$Site <- factor(sample_names(fun.abund))
+fun.abund = transform_sample_counts(fun.abund, function(x) x / sum(x))
+fun.abund
+```
+
+##Merge taxonomic data with OTU table and mapping file (Can alter code to change taxonomic rank to Order, Genus, Family, etc.) and change Phylum column from a factor to a character.
+
+```{r}
+data_glom.fun <- psmelt(fun.abund)
+data_glom.fun$Genus <- as.character(data_glom.fun$Genus)
+```
+
+##If a phylum has less than 1% abundance, phylum name is changed to <1% abund.
+
+```{r}
+data_glom.fun$Genus[data_glom.fun$Abundance < 0.01] <- "<1% abund."
+```
+
+Count the levels present in the Phylum column
+
+```{r}
+Count = length(unique(data_glom.fun$Genus))
+Count
+```
+
+Print out unique phyla names for insertion into barplots in next step.
+
+```{r}
+unique((data_glom.fun$Genus))
+```
+
+Create levels of phyla represented in barplot. Levels appear on the barplot in the order they are listed
+
+```{r}
+data_glom.fun$Genus <- factor(data_glom.fun$Genus, levels = c("Knufia", "Alternaria", "Phoma", "Unknown", "Cladophialophora", "Cladosporium", "Herpotrichia", "Pyrenophora", "Exophiala", "Epicoccum", "Phaeosphaeria", "Tumularia","Didymella","Neodevriesia", "<1% abund."))
+```
+
+###Create barplot of phyla - use facet_grid to separate samples by a variable ie in mapping file. Choose colors for plot in scale_fill_manual. color names can be found at http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf *amount of colors must match amount of level in phyla column
+```{r}
+data_glom.fun$Substrate = factor(data_glom.fun$Substrate, levels = c("Moss Crust", "Surface Sterile", "Subsurface", "Dirt"))
+```
+```{r fig.height=5, fig.width=8, fig.align="center"}
+# The palette with black:
+OKeeffe <- c("#796B58", "#1C1A18", "#95D1E6","#D2BAA4", "#96B5BC", "azure2", "azure3")
+```
+
+```{r}
+# Get the Dali palette
+Dali <- moma.colors("Dali")
+
+# Add one more color to the palette
+Dali <- c(Dali, OKeeffe)
+
+# Check the updated palette
+Dali
+```
+
+```{r}
+data_glom.fun$Site = factor(data_glom.fun$Site, levels = c("TP", "TP2", "CIMA", "GMT", "ODLO", "AB"))
+```
+
+```{r fig.height=5, fig.width=8, fig.align="center"}
+# The palette with black:
+taxcom_layer_pl = ggplot(data = data_glom.fun, mapping = aes_string(x = "Site" ,y = "Abundance", fill = "Genus" )) + 
+  geom_bar(stat="identity", position="fill") + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_fill_manual(values = Dali)
+print(taxcom_layer_pl)
+taxcom_layer_pl + physeq.prune.rarefy.plot.richness.Site
+```
+
+# Regular bar plot
+
+##Make taxonomy table into a matrix and relabel NA as unknown
+```{r}
+tax.fun <- as(tax_table(physeq.prune.rarefy.SF),"matrix")
+head(tax.fun)
+tax.fun[is.na(tax.fun)] <- "Unknown"
+head(tax.fun)
+```
+
+###Convert tax table back to phyloseq object and generate phyloseq object with new tax table
+```{r}
+TAX.fun <- tax_table(tax.fun)
+fun.3 <- phyloseq(sample_data(physeq.prune.rarefy.SF),otu_table(physeq.prune.rarefy.SF),TAX.fun)
+fun.3
+```
+
+```{r}
+glom.fun <- tax_glom(fun.3,taxrank = "Class")
+glom.fun
+```
+
+```{r}
+tax_table(glom.fun)
+```
+
+##Transform OTU table to show relative abundance
+##Samples can also be merged together by a variable in the mapping file
+
+```{r}
+fun.abund <- merge_samples(glom.fun, "Climate")
+sample_data(fun.abund)$Climate <- factor(sample_names(fun.abund))
+fun.abund = transform_sample_counts(fun.abund, function(x) x / sum(x))
+fun.abund
+```
+
+##Merge taxonomic data with OTU table and mapping file (Can alter code to change taxonomic rank to Order, Class, Family, etc.) and change Phylum column from a factor to a character.
+
+```{r}
+data_glom.fun <- psmelt(fun.abund)
+data_glom.fun$Class <- as.character(data_glom.fun$Class)
+```
+
+##If a phylum has less than 1% abundance, phylum name is changed to <1% abund.
+
+```{r}
+data_glom.fun$Class[data_glom.fun$Abundance < 0.01] <- "<1% abund."
+```
+
+Count the levels present in the Phylum column
+
+```{r}
+Count = length(unique(data_glom.fun$Class))
+Count
+```
+
+Print out unique phyla names for insertion into barplots in next step.
+
+```{r}
+unique((data_glom.fun$Class))
+```
+
+Create levels of phyla represented in barplot. Levels appear on the barplot in the order they are listed
+
+```{r}
+data_glom.fun$Class <- factor(data_glom.fun$Class, levels = c("Agaricomycetes", "Dothideomycetes", "Pezizomycetes", "Unknown", "Microbotryomycetes", "Eurotiomycetes","Sordariomycetes", "Saccharomycetes", "Rhizophlyctidomycetes", "Tremellomycetes","Glomeromycetes","Lecanoromycetes","Leotiomycetes","Basidiobolomycetes","<1% abund."))
+```
+
+###Create barplot of phyla - use facet_grid to separate samples by a variable ie in mapping file. Choose colors for plot in scale_fill_manual. color names can be found at http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf *amount of colors must match amount of level in phyla column
+
+```{r}
+data_glom.fun$Climate = factor(data_glom.fun$Climate, levels = c("Mojave_Desert", "Colorado_Desert", "Coastal"))
+```
+
+```{r fig.height=5, fig.width=8, fig.align="center"}
+taxcom_layer = ggplot(data = data_glom.fun, mapping = aes_string(x = "Climate" ,y = "Abundance", fill = "Class" )) + 
+  geom_bar(stat="identity", position="fill") + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_fill_manual(values = Dali)
+taxcom_layer_pl + physeq.prune.rarefy.plot.richness.Site + taxcom_layer
+```
+
+
+###STEP11: Beta diversity
+```{r}
+ps.dist = phyloseq::distance(physeq.prune, "bray")
+```
+
+### Prune taxa with low counts, subset for the layer, ordinate
+```{r}
+physeq.prune.x = prune_taxa(taxa_sums(physeq.prune.rarefy) > 10, physeq.prune.rarefy)
+physeq.prune.x.SF = subset_samples(physeq.prune.x, Layer=="Surface")
+physeq.prune.x.SF.ord <- ordinate(physeq.prune.x.SF, "PCoA", "bray")
+```
+
+```{r}
+sample_data(physeq.prune.x)$Substrate = factor(sample_data(physeq.prune.x)$Substrate, levels = c("Moss Crust","Subsurface", "Dirt", "Surface Sterile"))
+```
+
+###Beta by Climate
+
+```{r}
+# prune the samples with zero counts
+physeq.prune.SF.x <- prune_samples(sample_sums(physeq.prune.SF.x)>=1, physeq.prune.SF.x)
+
+# Perform ordination
+physeq.prune.x.SF.ord.2 <- ordinate(physeq.prune.SF.x, "PCoA", "bray")
+
+```
+
+```{r}
+
+ps.dist2 = phyloseq::distance(physeq.prune.SF.x, "bray")
+
+adonis2(ps.dist2 ~ Climate, as(sample_data(physeq.prune.SF.x),"data.frame"))
+
+```
+
+
+
+```{r}
+sample_data(physeq.prune.x)$Climate = factor(sample_data(physeq.prune.x)$Climate, levels = c("Mojave_Desert","Colorado_Desert", "Coastal"))
+```
+
+```{r}
+psClimate = plot_ordination(physeq.prune.x.SF, physeq.prune.x.SF.ord, type = "Climate", color = "Climate")  + theme_bw() + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Dali) + annotate("text", x = .5, y = 0.7, label = "PERMANOVA, p = 0.001")
+
+combined <- psClimate + physeq.prune.rarefy.plot.richness.Site + taxcom_layer_pl + taxcom_layer + plot_annotation(tag_levels = 'A')
+combined 
+```
+
+```{r}
+svg("./multipannelvenn.svg", width = 13, height = 11)
+combined 
+dev.off()
+```
+
+
+
+
+
+
+
+
+
