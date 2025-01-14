@@ -146,7 +146,58 @@ physeq.prune.rarefy
 physeq.prune.rarefy.SF = subset_samples(physeq.prune.rarefy, Layer=="Surface")
 ```
 
+### subset only for Fungi
+```{r}
+
+#physeq.prune.rarefy = subset_taxa(physeq.prune.rarefy, Kingdom == "Fungi")
+#physeq.prune.rarefy.SF = subset_taxa(physeq.prune.rarefy, Kingdom == "Fungi")
+
+```
+
+
 # Observed alpha diversity
+
+```{r}
+physeq.prune.rarefy.SF = subset_samples(physeq.prune.rarefy, Layer=="Surface")
+sample_data(physeq.prune.rarefy.SF)$Site = factor(sample_data(physeq.prune.rarefy.SF)$Site, levels = c("CIMA", "ODLO", "AB", "GMT","TP", "TP2"))
+```
+
+```{r}
+alpha.diversity.SF = estimate_richness(physeq.prune.rarefy.SF, measures = c("Observed"))
+data.anova.SF = cbind(sample_data(physeq.prune.rarefy.SF), alpha.diversity.SF)
+physeq.prune.rarefy.anova.SF = aov(Observed ~ Site, data.anova.SF)
+summary(physeq.prune.rarefy.anova.SF)
+```
+
+
+```{r}
+tukey.ps = TukeyHSD(x=physeq.prune.rarefy.anova.SF, 'Site', conf.level = 0.95)
+
+generate_label_df <- function(tukey.ps, variable){
+  
+  # Extract labels and factor levels from Tukey post-hoc 
+  Tukey.levels <- tukey.ps[[variable]][,4]
+  Tukey.labels <- data.frame(multcompLetters(Tukey.levels)['Letters'])
+  
+  #I need to put the labels in the same order as in the boxplot :
+  Tukey.labels$treatment=rownames(Tukey.labels)
+  Tukey.labels=Tukey.labels[order(Tukey.labels$treatment) , ]
+  return(Tukey.labels)
+}
+
+LABELS=generate_label_df(tukey.ps, 'Site')
+names(LABELS) = c('Letters','Site')
+```
+
+```{r}
+LABELS
+```
+
+```{r}
+ylabel <- data.frame("ylabel" = c(700,1250,500,700,650,1000))
+LABELS$ylabel<-ylabel$ylabel
+LABELS
+```
 ```{r}
 physeq.prune.rarefy.plot.richness.Site = plot_richness(physeq.prune.rarefy.SF, x="Site", color=("Site"), measures=c("Observed")) + geom_boxplot(lwd=0.5) + stat_compare_means(method = "anova", label.y = 1500) + theme(plot.title = element_text(hjust = 0.5)) + geom_text(data=LABELS, aes(x=LABELS$Site, y = LABELS$ylabel , label = LABELS$Letters)) + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + scale_color_manual(values = Dali) 
 physeq.prune.rarefy.plot.richness.Site
@@ -266,7 +317,12 @@ taxcom_layer_pl + physeq.prune.rarefy.plot.richness.Site
 
 ##Make taxonomy table into a matrix and relabel NA as unknown
 ```{r}
-tax.fun <- as(tax_table(physeq.prune.rarefy.SF),"matrix")
+physeq.prune.rarefy.f = subset_taxa(physeq.prune.rarefy, Kingdom == "Fungi")
+physeq.prune.rarefy.SF.f = subset_taxa(physeq.prune.rarefy, Kingdom == "Fungi")
+```
+
+```{r}
+tax.fun <- as(tax_table(physeq.prune.rarefy.SF.f),"matrix")
 head(tax.fun)
 tax.fun[is.na(tax.fun)] <- "Unknown"
 head(tax.fun)
@@ -275,7 +331,7 @@ head(tax.fun)
 ###Convert tax table back to phyloseq object and generate phyloseq object with new tax table
 ```{r}
 TAX.fun <- tax_table(tax.fun)
-fun.3 <- phyloseq(sample_data(physeq.prune.rarefy.SF),otu_table(physeq.prune.rarefy.SF),TAX.fun)
+fun.3 <- phyloseq(sample_data(physeq.prune.rarefy.SF.f),otu_table(physeq.prune.rarefy.SF.f),TAX.fun)
 fun.3
 ```
 
@@ -336,7 +392,13 @@ data_glom.fun$Class <- factor(data_glom.fun$Class, levels = c("Agaricomycetes", 
 data_glom.fun$Climate = factor(data_glom.fun$Climate, levels = c("Mojave_Desert", "Colorado_Desert", "Coastal"))
 ```
 
+### Remove NA again
+```{r}
+data_glom.fun[is.na(data_glom.fun)] <- "Unknown"
+```
+
 ```{r fig.height=5, fig.width=8, fig.align="center"}
+
 taxcom_layer = ggplot(data = data_glom.fun, mapping = aes_string(x = "Climate" ,y = "Abundance", fill = "Class" )) + 
   geom_bar(stat="identity", position="fill") + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
@@ -364,19 +426,17 @@ sample_data(physeq.prune.x)$Substrate = factor(sample_data(physeq.prune.x)$Subst
 ###Beta by Climate
 
 ```{r}
-# prune the samples with zero counts
-physeq.prune.SF.x <- prune_samples(sample_sums(physeq.prune.SF.x)>=1, physeq.prune.SF.x)
 
 # Perform ordination
-physeq.prune.x.SF.ord.2 <- ordinate(physeq.prune.SF.x, "PCoA", "bray")
+physeq.prune.x.SF.ord.2 <- ordinate(physeq.prune.x.SF, "PCoA", "bray")
 
 ```
 
 ```{r}
 
-ps.dist2 = phyloseq::distance(physeq.prune.SF.x, "bray")
+ps.dist2 = phyloseq::distance(physeq.prune.x.SF, "bray")
 
-adonis2(ps.dist2 ~ Climate, as(sample_data(physeq.prune.SF.x),"data.frame"))
+adonis2(ps.dist2 ~ Climate, as(sample_data(physeq.prune.x.SF),"data.frame"))
 
 ```
 
@@ -394,7 +454,7 @@ combined
 ```
 
 ```{r}
-png("./multipannelvenn.png", width = 16, height = 12, units = "in", res = 600)
+png("./multipannelvenn.png", width = 16, height = 12, units = "in", res = 400)
 combined 
 dev.off()
 ```
