@@ -449,12 +449,12 @@ sample_data(physeq.prune.x)$Climate = factor(sample_data(physeq.prune.x)$Climate
 ```{r}
 psClimate = plot_ordination(physeq.prune.x.SF, physeq.prune.x.SF.ord, type = "Climate", color = "Climate")  + theme_bw() + theme(plot.title = element_text(hjust = 0.5)) + stat_ellipse(geom = "polygon", alpha = 1/12) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + geom_point(size=5) + scale_colour_manual(values = Dali) + annotate("text", x = .5, y = 0.7, label = "PERMANOVA, p = 0.001")
 
-combined <- psClimate + physeq.prune.rarefy.plot.richness.Site + taxcom_layer_pl + taxcom_layer + plot_annotation(tag_levels = 'A')
+combined <- psClimate + physeq.prune.rarefy.plot.richness.Site + taxcom_layer + taxcom_layer_pl + plot_annotation(tag_levels = 'A')
 combined 
 ```
 
 ```{r}
-png("./multipannelvenn.png", width = 16, height = 12, units = "in", res = 400)
+png("./multipannelvenn2.png", width = 16, height = 12, units = "in", res = 400)
 combined 
 dev.off()
 ```
