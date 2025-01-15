@@ -30,22 +30,28 @@ tree <- drop.tip(tree, "Mortierella_globalpina")
 
 # Based on the structure of straintree, identify the correct attribute for bootstrap values
 ```{r}
+# Modify the tree labels to exclude anything after the decimal
+tree$tip.label <- sub("\\..*$", "", tree$tip.label)
+
+# Plot the tree
 p1 <- ggtree(tree, layout="circular", size=.75, aes(color=as.numeric(label)), branch.length="none") +
   scale_color_gradient("Bootstrap", low = "green", high = "black", limits=c(0,100)) + 
   new_scale_color() +
   geom_tiplab(aes(color=ifelse(grepl("ASV", label), "blue", ifelse(grepl("culture", label), "red", "black"))), size=5) + 
-  theme(legend.position = "bottom", legend.key.size = unit(4, "lines"), legend.text = element_text(size = 18)) + # Increase legend text size
+  theme(
+    legend.position = "bottom",
+    legend.key.size = unit(4, "lines"),
+    legend.text = element_text(size = 18),
+    legend.title = element_text(size = 20)
+  ) +
   scale_y_continuous(limits=c(1, 100)) +
   scale_color_identity() +
   labs(color = "Legend Title") # Add legend title
 
-
-
-plot(p1)
 ```
 
 ```{r}
 
 # Save the plot to an image file
-ggsave("NCBIreftree.png", p1, width = 30, height = 26)
+ggsave("NCBIreftree.svg", p1, width = 30, height = 26)
 ```
